@@ -2,7 +2,8 @@
 #coding=utf-8
 #edit richard  2019/3/8
 from datetime import datetime
-#from app import db
+from app import db
+'''
 from flask import  Flask
 from flask_sqlalchemy import SQLAlchemy
 app =  Flask(__name__)
@@ -11,6 +12,16 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "mysql://root:@127.0.0.1:3306/db_mydevop
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
 app.config['SECRET_KEY'] = 'b0ba9e899e254f6eaed382f19af1915e'
 db = SQLAlchemy(app)
+'''
+
+#标签
+class Tag(db.Model):
+    __tablename__ = "tag"
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(100), unique=True, nullable=False)
+    addtime = db.Column(db.DateTime, index=True, default=datetime.now)
+    def __repr__(self):
+        return "<Tag %r>" % self.name
 #会员
 class User(db.Model):
     __tablename__ = "user"

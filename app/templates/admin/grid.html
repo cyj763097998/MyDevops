@@ -14,6 +14,25 @@
             </li>
         </ul>
     </li>
+        <li class="treeview" id="g-2">
+        <a href="#">
+            <i class="fa fa-tags" aria-hidden="true"></i>
+            <span>标签管理</span>
+            <span class="label label-primary pull-right">2</span>
+        </a>
+        <ul class="treeview-menu">
+            <li id="g-2-1">
+                <a href="{{url_for('admin.tag_add')}}">
+                    <i class="fa fa-circle-o"></i> 添加标签
+                </a>
+            </li>
+            <li id="g-2-2">
+                <a href="{{url_for('admin.tag_list',page=1)}}">
+                    <i class="fa fa-circle-o"></i> 标签列表
+                </a>
+            </li>
+        </ul>
+    </li>
     <li class="treeview" id="g-8">
         <a href="#">
             <i class="fa fa-file-text" aria-hidden="true"></i>
@@ -46,12 +65,12 @@
         </a>
         <ul class="treeview-menu">
             <li id="g-9-1">
-                <a href="#">
+                <a href="{{url_for('admin.auth_add')}}">
                     <i class="fa fa-circle-o"></i> 添加权限
                 </a>
             </li>
             <li id="g-9-2">
-                <a href="#">
+                <a href="{{url_for('admin.auth_list',page=1)}}">
                     <i class="fa fa-circle-o"></i> 权限列表
                 </a>
             </li>
@@ -65,12 +84,12 @@
         </a>
         <ul class="treeview-menu">
             <li id="g-10-1">
-                <a href="#">
+                <a href="{{url_for('admin.role_add')}}">
                     <i class="fa fa-circle-o"></i> 添加角色
                 </a>
             </li>
             <li id="g-10-2">
-                <a href="#">
+                <a href="{{url_for('admin.role_list',page=1)}}">
                     <i class="fa fa-circle-o"></i> 角色列表
                 </a>
             </li>
