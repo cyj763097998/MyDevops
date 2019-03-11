@@ -4,8 +4,8 @@
 
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField,FileField,TextAreaField,SelectField,SelectMultipleField
-from wtforms.validators import DataRequired, ValidationError
-from app.models import Admin,Auth
+from wtforms.validators import DataRequired, ValidationError,EqualTo
+from app.models import Admin,Auth,Role
 
 class LoginForm(FlaskForm):
     """登录"""
@@ -170,12 +170,81 @@ class RoleForm(FlaskForm):
         ],
         description="权限地址",
         coerce=int,
-        choices=[(v.id,v.name) for v in Auth.query.all()],
+        #choices=[(v.id,v.name) for v in Auth.query.all()],
         render_kw={
             "class": "form-control",
             "required": False
         }
     )
+    # 解决下拉数据不同步
+    def __init__(self, *args, **kwargs):
+        super(RoleForm, self).__init__(*args, **kwargs)
+        self.auths.choices = [(v.id, v.name) for v in Auth.query.all()]
+
+    submit = SubmitField(
+        "添加",
+        render_kw={
+            "class": "btn btn-primary"
+        }
+    )
+    submit_edit = SubmitField(
+        "编辑",
+        render_kw={
+            "class": "btn btn-primary"
+        }
+    )
+class AdminForm(FlaskForm):
+    '''管理员'''
+    name = StringField(
+        label="管理员名称",
+        validators=[
+            DataRequired("请输入管理员名称！")
+        ],
+        description="管理员名称",
+        render_kw={
+            "class": "form-control",
+            "placeholder": "请输入管理员名称！",
+            "required": False
+        }
+    )
+    pwd = PasswordField(
+        label="管理员密码",
+        validators=[
+            DataRequired("请输入管理员密码！"),
+        ],
+        description="管理员密码",
+        render_kw={
+            "class": "form-control",
+            "placeholder": "请输入管理员密码！",
+            "required": False
+        }
+    )
+    repwd = PasswordField(
+        label="管理员重复密码",
+        validators=[
+            DataRequired("请输入管理员重复密码！"),
+            EqualTo("pwd",message="两次密码不一致！")
+        ],
+        description="管理员重复密码",
+        render_kw={
+            "class": "form-control",
+            "placeholder": "请输入管理员重复密码！",
+            "required": False
+        }
+    )
+    role = SelectField(
+        label="所属角色",
+        description="所属角色",
+        coerce=int,
+        #choices= [(v.id,v.name) for v in Role.query.all()],
+        render_kw={
+            "class": "form-control",
+        }
+    )
+    # 解决下拉数据不同步
+    def __init__(self, *args, **kwargs):
+        super(AdminForm, self).__init__(*args, **kwargs)
+        self.role.choices = [(v.id, v.name) for v in Role.query.all()]
     submit = SubmitField(
         "添加",
         render_kw={

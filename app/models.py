@@ -3,7 +3,7 @@
 #edit richard  2019/3/8
 from datetime import datetime
 from app import db
-'''
+"""
 from flask import  Flask
 from flask_sqlalchemy import SQLAlchemy
 app =  Flask(__name__)
@@ -12,7 +12,7 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "mysql://root:@127.0.0.1:3306/db_mydevop
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
 app.config['SECRET_KEY'] = 'b0ba9e899e254f6eaed382f19af1915e'
 db = SQLAlchemy(app)
-'''
+"""
 
 #标签
 class Tag(db.Model):
@@ -74,10 +74,11 @@ class Admin(db.Model):
     id = db.Column(db.Integer,primary_key=True,autoincrement=True)
     name = db.Column(db.String(100),unique=True,nullable=False)
     pwd = db.Column(db.String(100), nullable=False)
-    is_super = db.Column(db.SmallInteger)  #是否是超级管理员  0代表超级管理员
+    is_super = db.Column(db.SmallInteger,default=0)  #是否是超级管理员  0代表超级管理员
     role_id = db.Column(db.Integer, db.ForeignKey('role.id'))  #所属角色
     adminlogs = db.relationship("Adminlog", backref="admin")  # 管理员登录日志外键关系关联
     oplogs = db.relationship("Oplog", backref="admin")  # 操作日志外键关系关联
+    roles = db.relationship("Role", backref='admin')
     addtime = db.Column(db.DateTime, index=True, default=datetime.now)
     def __repr__(self):
         return "<Admin %r>" % self.name
