@@ -30,11 +30,10 @@ def admin_auth(f):
         ).first()
         auths = admin.roles.auths
         auths = list(map(lambda v: int(v), auths.split(",")))
-        print auths
         auth_list = Auth.query.all()
         urls = [v.url for v in auth_list for val in auths if val == v.id]
         rule = request.url_rule
-        if str(rule) not in urls:
+        if str(rule) not in urls and admin.is_super ==0:
             abort(404)
         return f(*args,**kwargs)
     return decorated_function
@@ -328,3 +327,19 @@ def admin_list(page=None):
         Admin.addtime.desc()
     ).paginate(page=page, per_page=10)
     return render_template("admin/admin_list.html",page_data=page_data)
+
+#添加主机
+@admin.route("/host/add/",methods=["GET","POST"])
+@admin_login_req
+@admin_auth
+def host_add():
+    return render_template("admin/host_add.html")
+
+#主机列表
+@admin.route("/host/list/<int:page>/",methods=["get"])
+@admin_login_req
+@admin_auth
+def host_list(page=None):
+    if page is None:
+        page=1
+    return render_template("admin/host_list.html")
