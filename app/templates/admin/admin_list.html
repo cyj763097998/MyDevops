@@ -27,6 +27,13 @@
                     </div>
                 </div>
                 <div class="box-body table-responsive no-padding">
+                    {% for mes in get_flashed_messages(category_filter=["ok"]) %}
+                    <div class="alert alert-success alert-dismissible">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <h4><i class="icon fa fa-check"></i> 操作成功！</h4>
+                    {{ mes }}
+                    </div>
+                    {% endfor %}
                     <table class="table table-hover">
                         <tbody>
                         <tr>
@@ -35,6 +42,7 @@
                             <th>管理员类型</th>
                             <th>管理员角色</th>
                             <th>添加时间</th>
+                            <th>操作</th>
                         </tr>
                         {% for v in page_data.items %}
                         <tr>
@@ -47,6 +55,11 @@
                             {% endif %}
                             <td>{{ v.roles.name }}</td>
                             <td>{{ v.addtime }}</td>
+                            <td>
+                                <a href="{{url_for("admin.admin_edit",id=v.id)}}" class="label label-success">编辑</a>
+                                &nbsp;
+                                <a href="{{url_for("admin.admin_del",id=v.id)}}" class="label label-danger">删除</a>
+                            </td>
                         </tr>
                         {% endfor %}
                         </tbody>

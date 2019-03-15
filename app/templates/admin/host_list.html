@@ -46,19 +46,23 @@
                             <th>在线状态</th>
                             <th>操作事项</th>
                         </tr>
-                        {% for v in range(1,10) %}
+                        {% for v in page_data.items %}
                         <tr>
-                            <td>1</td>
-                            <td>测试机</td>
-                            <td>117.25.149.207</td>
-                            <td>192.168.0.207</td>
-                            <td>8核</td>
-                            <td>8G</td>
+                            <td>{{ v.id }}</td>
+                            <td>{{ v.name }}</td>
+                            <td>{{ v.outernet_ip }}</td>
+                            <td>{{ v.intranet_ip }}</td>
+                            <td>{{ v.cpu }}</td>
+                            <td>{{ v.memory }}</td>
+                            {% if v.status == 1 %}
                             <td>在线</td>
+                            {% else %}
+                            <td>离线</td>
+                            {% endif %}
                             <td>
-                                <a href="#" class="label label-success">编辑</a>
+                                <a href="{{url_for("admin.host_edit",id=v.id)}}" class="label label-success">编辑</a>
                                 &nbsp;
-                                <a href="#" class="label label-danger">删除</a>
+                                <a href="{{url_for("admin.host_del",id=v.id)}}" class="label label-danger">删除</a>
                             </td>
                         </tr>
                         {% endfor %}

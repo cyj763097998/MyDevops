@@ -5,7 +5,7 @@
     <h1>自动化运维系统</h1>
     <ol class="breadcrumb">
         <li><a href="#"><i class="fa fa-dashboard"></i> 主机管理</a></li>
-        <li class="active">添加主机</li>
+        <li class="active">编辑主机</li>
     </ol>
 </section>
 <section class="content" id="showcontent">
@@ -13,7 +13,7 @@
         <div class="col-md-12">
             <div class="box box-primary">
                 <div class="box-header with-border">
-                    <h3 class="box-title">添加主机</h3>
+                    <h3 class="box-title">编辑主机</h3>
                 </div>
                 <form role="form" method="POST">
                     <div class="box-body">
@@ -33,7 +33,7 @@
                         {% endfor %}
                         <div class="form-group">
                             <label for="input_name">{{ form.host_name.label }}</label>
-                            {{ form.host_name}}
+                            {{ form.host_name(value=host.name) }}
                             {% for err in form.host_name.errors %}
                             <div class="col-md-12">
                                 <font style="color:red">{{ err }}</font>
@@ -42,7 +42,7 @@
                         </div>
                         <div class="form-group">
                             <label for="input_name">{{ form.system.label }}</label>
-                            {{ form.system}}
+                            {{ form.system(value=host.system) }}
                             {% for err in form.system.errors %}
                             <div class="col-md-12">
                                 <font style="color:red">{{ err }}</font>
@@ -51,7 +51,7 @@
                         </div>
                         <div class="form-group">
                             <label for="input_name">{{ form.outernet_ip.label }}</label>
-                            {{ form.outernet_ip }}
+                            {{ form.outernet_ip(value=host.outernet_ip) }}
                             {% for err in form.outernet_ip.errors %}
                             <div class="col-md-12">
                                 <font style="color:red">{{ err }}</font>
@@ -60,7 +60,7 @@
                         </div>
                         <div class="form-group">
                             <label for="input_name">{{ form.intranet_ip.label }}</label>
-                            {{ form.intranet_ip }}
+                            {{ form.intranet_ip(value=host.intranet_ip) }}
                             {% for err in form.intranet_ip.errors %}
                             <div class="col-md-12">
                                 <font style="color:red">{{ err }}</font>
@@ -69,7 +69,7 @@
                         </div>
                         <div class="form-group">
                             <label for="input_name">{{ form.cpu.label }}</label>
-                            {{ form.cpu }}
+                            {{ form.cpu(value=host.cpu) }}
                             {% for err in form.cpu.errors %}
                             <div class="col-md-12">
                                 <font style="color:red">{{ err }}</font>
@@ -78,7 +78,7 @@
                         </div>
                         <div class="form-group">
                             <label for="input_name">{{ form.memory.label }}</label>
-                            {{ form.memory }}
+                            {{ form.memory(value=host.memory) }}
                             {% for err in form.memory.errors %}
                             <div class="col-md-12">
                                 <font style="color:red">{{ err }}</font>
@@ -87,7 +87,7 @@
                         </div>
                         <div class="form-group">
                             <label for="input_name">{{ form.disk.label }}</label>
-                            {{ form.disk }}
+                            {{ form.disk(value=host.disk) }}
                             {% for err in form.disk.errors %}
                             <div class="col-md-12">
                                 <font style="color:red">{{ err }}</font>
@@ -96,7 +96,7 @@
                         </div>
                         <div class="form-group">
                             <label for="input_name">{{ form.username.label }}</label>
-                            {{ form.username }}
+                            {{ form.username(value=host.username) }}
                             {% for err in form.username.errors %}
                             <div class="col-md-12">
                                 <font style="color:red">{{ err }}</font>
@@ -105,7 +105,7 @@
                         </div>
                         <div class="form-group">
                             <label for="input_name">{{ form.password.label }}</label>
-                            {{ form.password }}
+                            {{ form.password(value=host.password) }}
                             {% for err in form.password.errors %}
                             <div class="col-md-12">
                                 <font style="color:red">{{ err }}</font>
@@ -114,7 +114,7 @@
                         </div>
                         <div class="form-group">
                             <label for="input_name">{{ form.port.label }}</label>
-                            {{ form.port }}
+                            {{ form.port(value=host.port) }}
                             {% for err in form.port.errors %}
                             <div class="col-md-12">
                                 <font style="color:red">{{ err }}</font>
@@ -123,7 +123,7 @@
                         </div>
                         <div class="form-group">
                             <label for="input_name">{{ form.ssh_port.label }}</label>
-                            {{ form.ssh_port }}
+                            {{ form.ssh_port(value=host.ssh_port) }}
                             {% for err in form.ssh_port.errors %}
                             <div class="col-md-12">
                                 <font style="color:red">{{ err }}</font>
@@ -142,7 +142,7 @@
                     </div>
                     <div class="box-footer">
                         {{form.csrf_token}}
-                        {{form.submit}}
+                        {{form.submit_edit}}
                         {{form.submit_back}}
                     </div>
                 </form>

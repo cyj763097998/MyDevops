@@ -83,7 +83,13 @@ class PwdForm(FlaskForm):
         admin = Admin.query.filter_by(name = session["admin"]).first()
         if not admin.check_pwd(pwd):
             raise ValidationError("密码不正确！")
-
+    submit_back = SubmitField(
+        "返回",
+        render_kw={
+            "class": "btn btn-success",
+            "onclick" :"javascript:history.back(-1);return false;"
+        }
+    )
 class TagForm(FlaskForm):
     """标签"""
     tag_name = StringField(
@@ -110,7 +116,13 @@ class TagForm(FlaskForm):
             "class": "btn btn-primary"
         }
     )
-
+    submit_back = SubmitField(
+        "返回",
+        render_kw={
+            "class": "btn btn-success",
+            "onclick" :"javascript:history.back(-1);return false;"
+        }
+    )
 class AuthForm(FlaskForm):
     """权限"""
     auth_name = StringField(
@@ -147,6 +159,13 @@ class AuthForm(FlaskForm):
         "编辑",
         render_kw={
             "class": "btn btn-primary"
+        }
+    )
+    submit_back = SubmitField(
+        "返回",
+        render_kw={
+            "class": "btn btn-success",
+            "onclick" :"javascript:history.back(-1);return false;"
         }
     )
 class RoleForm(FlaskForm):
@@ -191,6 +210,13 @@ class RoleForm(FlaskForm):
         "编辑",
         render_kw={
             "class": "btn btn-primary"
+        }
+    )
+    submit_back = SubmitField(
+        "返回",
+        render_kw={
+            "class": "btn btn-success",
+            "onclick" :"javascript:history.back(-1);return false;"
         }
     )
 class AdminForm(FlaskForm):
@@ -255,5 +281,175 @@ class AdminForm(FlaskForm):
         "编辑",
         render_kw={
             "class": "btn btn-primary"
+        }
+    )
+    submit_back = SubmitField(
+        "返回",
+        render_kw={
+            "class": "btn btn-success",
+            "onclick" :"javascript:history.back(-1);return false;"
+        }
+    )
+class HostForm(FlaskForm):
+    """主机"""
+    host_name = StringField(
+        label="主机名",
+        validators=[
+            DataRequired("请输入主机名！")
+        ],
+        description="主机名",
+        render_kw={
+            "class": "form-control",
+            "placeholder": "请输入主机名！",
+            "required": False
+        }
+    )
+    system = StringField(
+        label="系统",
+        validators=[
+            DataRequired("请输入系统！")
+        ],
+        description="系统",
+        render_kw={
+            "class": "form-control",
+            "placeholder": "请输入系统！",
+            "required": False
+        }
+    )
+    outernet_ip = StringField(
+        label="外网ip",
+        validators=[
+            DataRequired("请输入外网ip！")
+        ],
+        description="外网ip",
+        render_kw={
+            "class": "form-control",
+            "placeholder": "请输入外网ip！",
+            "required": False
+        }
+    )
+    intranet_ip = StringField(
+        label="内网ip",
+        validators=[
+            DataRequired("请输入内网ip！")
+        ],
+        description="系统",
+        render_kw={
+            "class": "form-control",
+            "placeholder": "请输入内网ip！",
+            "required": False
+        }
+    )
+    cpu = StringField(
+        label="CPU",
+        validators=[
+            DataRequired("请输入CPU！")
+        ],
+        description="CPU",
+        render_kw={
+            "class": "form-control",
+            "placeholder": "请输入CPU！",
+            "required": False
+        }
+    )
+    memory = StringField(
+        label="内存",
+        validators=[
+            DataRequired("请输入内存！")
+        ],
+        description="内存",
+        render_kw={
+            "class": "form-control",
+            "placeholder": "请输入内存！",
+            "required": False
+        }
+    )
+    disk = StringField(
+        label="硬盘",
+        validators=[
+            DataRequired("请输入硬盘！")
+        ],
+        description="硬盘",
+        render_kw={
+            "class": "form-control",
+            "placeholder": "请输入硬盘！",
+            "required": False
+        }
+    )
+    username = StringField(
+        label="用户",
+        validators=[
+            DataRequired("请输入用户！")
+        ],
+        description="用户",
+        render_kw={
+            "class": "form-control",
+            "placeholder": "请输入用户！",
+            "required": False
+        }
+    )
+    password = StringField(
+        label="密码",
+        validators=[
+            DataRequired("请输入密码！")
+        ],
+        description="密码",
+        render_kw={
+            "class": "form-control",
+            "placeholder": "请输入密码！",
+            "required": False
+        }
+    )
+    port = StringField(
+        label="端口",
+        validators=[
+            DataRequired("请输入端口！")
+        ],
+        description="端口",
+        render_kw={
+            "class": "form-control",
+            "placeholder": "请输入端口！",
+            "required": False
+        }
+    )
+    ssh_port = StringField(
+        label="ssh端口",
+        validators=[
+            DataRequired("请输入ssh端口！")
+        ],
+        description="ssh端口",
+        render_kw={
+            "class": "form-control",
+            "placeholder": "请输入ssh端口！",
+            "required": False
+        }
+    )
+    status = SelectField(
+        label="在线状态",
+        description="在线状态",
+        coerce=int,
+        choices= [(1,"在线"),(2,"离线") ],
+        render_kw={
+            "class": "form-control",
+            "required": False
+        }
+    )
+    submit = SubmitField(
+        "添加",
+        render_kw={
+            "class": "btn btn-primary"
+        }
+    )
+    submit_edit = SubmitField(
+        "编辑",
+        render_kw={
+            "class": "btn btn-primary"
+        }
+    )
+    submit_back = SubmitField(
+        "返回",
+        render_kw={
+            "class": "btn btn-success",
+            "onclick" :"javascript:history.back(-1);return false;"
         }
     )

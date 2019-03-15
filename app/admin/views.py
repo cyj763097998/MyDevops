@@ -3,9 +3,9 @@
 #edit richard  2019/3/8
 
 from . import admin
-from flask import render_template, url_for, redirect,flash,session,request,abort
-from forms import LoginForm,PwdForm,TagForm,AuthForm,RoleForm,AdminForm
-from app.models import Admin,Tag,Auth,Role
+from flask import render_template, url_for, redirect,flash,session,request,abort,jsonify
+from forms import LoginForm,PwdForm,TagForm,AuthForm,RoleForm,AdminForm,HostForm
+from app.models import Admin,Tag,Auth,Role,Host
 from functools import wraps
 from app import db
 import datetime
@@ -34,7 +34,7 @@ def admin_auth(f):
         urls = [v.url for v in auth_list for val in auths if val == v.id]
         rule = request.url_rule
         if str(rule) not in urls and admin.is_super ==0:
-            abort(404)
+            abort(403)
         return f(*args,**kwargs)
     return decorated_function
 #上下文处理器
@@ -108,6 +108,7 @@ def tag_add():
         db.session.commit()
         flash("添加标签成功！","ok")
         return redirect(url_for("admin.tag_add"))
+        #return jsonify(code=200, status=0, message='ok', data={})
     return render_template("admin/tag_add.html",form=form)
 
 #标签列表
@@ -327,13 +328,78 @@ def admin_list(page=None):
         Admin.addtime.desc()
     ).paginate(page=page, per_page=10)
     return render_template("admin/admin_list.html",page_data=page_data)
+#编辑管理员
+@admin.route("/admin/edit/<int:id>/",methods=["GET","POST"])
+@admin_login_req
+@admin_auth
+def admin_edit(id=None):
+    form = AdminForm()
+    admin = Admin.query.get_or_404(id)
+    if request.method == "GET":
+        form.pwd.data = admin.pwd
+        form.role.data = admin.role_id
+    if form.validate_on_submit():
+        data = form.data
+        admin_num=Admin.query.filter_by(name=data["name"]).count()
+        if admin.name != data["name"] and admin_num == 1:
+            flash("管理员名称已经存在！","err")
+            return redirect(url_for("admin.admin_edit",id=id))
+        from werkzeug.security import generate_password_hash
+        admin.name = data["name"]
+        admin.pwd = generate_password_hash(data["pwd"])
+        admin.role_id = data["role"]
+        db.session.add(admin)
+        db.session.commit()
+        flash("修改管理员成功！","ok")
+        return redirect(url_for("admin.admin_edit",id=id))
+    return render_template("admin/admin_edit.html",form=form,admin=admin)
+
+#删除管理员
+@admin.route("/admin/del/<int:id>/",methods=["get"])
+@admin_login_req
+@admin_auth
+def admin_del(id=None):
+    admin=Admin.query.filter_by(id=id).first_or_404()
+    db.session.delete(admin)
+    db.session.commit()
+    flash("删除管理员成功！","ok")
+    return redirect(url_for("admin.admin_list",page=1))
 
 #添加主机
 @admin.route("/host/add/",methods=["GET","POST"])
 @admin_login_req
 @admin_auth
 def host_add():
-    return render_template("admin/host_add.html")
+    form = HostForm()
+    if form.validate_on_submit():
+        data = form.data
+        name_count = Host.query.filter_by(name=data["host_name"]).count()
+        if name_count == 1:
+            flash("主机名已经存在！","err")
+            return redirect(url_for("admin.host_add"))
+        outernetip_num = Host.query.filter_by(outernet_ip=data["outernet_ip"]).count()
+        if outernetip_num == 1:
+            flash("外网IP已经存在！", "err")
+            return redirect(url_for("admin.host_add"))
+        host = Host(
+            name = data["host_name"],
+            system = data["system"],
+            outernet_ip = data["outernet_ip"],
+            intranet_ip = data["intranet_ip"],
+            cpu = data["cpu"],
+            memory = data["memory"],
+            disk = data["disk"],
+            username = data["username"],
+            password = data["password"],
+            port = data["port"],
+            ssh_port = data["ssh_port"],
+            status = data["status"],
+        )
+        db.session.add(host)
+        db.session.commit()
+        flash("添加主机成功","ok")
+        return redirect(url_for("admin.host_add"))
+    return render_template("admin/host_add.html",form=form)
 
 #主机列表
 @admin.route("/host/list/<int:page>/",methods=["get"])
@@ -342,4 +408,54 @@ def host_add():
 def host_list(page=None):
     if page is None:
         page=1
-    return render_template("admin/host_list.html")
+    page_data = Host.query.order_by(
+        Host.addtime.desc()
+    ).paginate(page=page, per_page=10)
+    return render_template("admin/host_list.html",page_data=page_data)
+#编辑主机
+@admin.route("/host/edit/<int:id>/",methods=["GET","POST"])
+@admin_login_req
+@admin_auth
+def host_edit(id=None):
+    form = HostForm()
+    host = Host.query.get_or_404(id)
+    if request.method == "GET":
+        form.status.data = host.status
+    if form.validate_on_submit():
+        data = form.data
+        host_num=Host.query.filter_by(name=data["host_name"]).count()
+        if host.name != data["host_name"] and host_num == 1:
+            flash("主机名已经存在！","err")
+            return redirect(url_for("admin.host_edit",id=id))
+        outernetip_num =Host.query.filter_by(outernet_ip=data["outernet_ip"]).count()
+        if host.outernet_ip != data["outernet_ip"] and outernetip_num == 1:
+            flash("外网IP已经存在！","err")
+            return redirect(url_for("admin.host_edit",id=id))
+        host.name = data["host_name"]
+        host.system = data["system"]
+        host.outernet_ip = data["outernet_ip"]
+        host.intranet_ip = data["intranet_ip"]
+        host.cpu = data["cpu"]
+        host.memory = data["memory"]
+        host.disk = data["disk"]
+        host.username = data["username"]
+        host.password = data["password"]
+        host.port = data["port"]
+        host.ssh_port = data["ssh_port"]
+        host.status = data["status"]
+        db.session.add(host)
+        db.session.commit()
+        flash("修改主机成功！","ok")
+        return redirect(url_for("admin.host_edit",id=id))
+    return render_template("admin/host_edit.html",form=form,host=host)
+
+#删除主机
+@admin.route("/host/del/<int:id>/",methods=["get"])
+@admin_login_req
+@admin_auth
+def host_del(id=None):
+    host=Host.query.filter_by(id=id).first_or_404()
+    db.session.delete(host)
+    db.session.commit()
+    flash("删除主机成功！","ok")
+    return redirect(url_for("admin.host_list",page=1))

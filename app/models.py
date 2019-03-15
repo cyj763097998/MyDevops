@@ -3,7 +3,7 @@
 #edit richard  2019/3/8
 from datetime import datetime
 from app import db
-"""
+'''
 from flask import  Flask
 from flask_sqlalchemy import SQLAlchemy
 app =  Flask(__name__)
@@ -12,7 +12,7 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "mysql://root:@127.0.0.1:3306/db_mydevop
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
 app.config['SECRET_KEY'] = 'b0ba9e899e254f6eaed382f19af1915e'
 db = SQLAlchemy(app)
-"""
+'''
 
 #标签
 class Tag(db.Model):
@@ -22,6 +22,28 @@ class Tag(db.Model):
     addtime = db.Column(db.DateTime, index=True, default=datetime.now)
     def __repr__(self):
         return "<Tag %r>" % self.name
+
+# 主机
+class Host(db.Model):
+    __tablename__ = "host"
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(100), unique=True, nullable=False)
+    system = db.Column(db.String(50))
+    outernet_ip = db.Column(db.String(50),unique=True,nullable=False)
+    intranet_ip = db.Column(db.String(50))
+    cpu = db.Column(db.String(100))
+    memory = db.Column(db.String(100))
+    disk = db.Column(db.String(100))
+    username = db.Column(db.String(100))
+    password = db.Column(db.String(100))
+    port = db.Column(db.String(50))
+    ssh_port = db.Column(db.String(50))
+    status = db.Column(db.SmallInteger)
+    addtime = db.Column(db.DateTime, index=True, default=datetime.now)
+
+    def __repr__(self):
+        return "<Host %r>" % self.name
+
 #会员
 class User(db.Model):
     __tablename__ = "user"
