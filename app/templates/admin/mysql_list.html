@@ -1,0 +1,98 @@
+{% extends "admin/admin.html" %}
+{% import "ui/admin_page.html" as pg %}
+{% block content %}
+<section class="content-header">
+    <h1>自动化运维系统</h1>
+    <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Mysql实例管理</a></li>
+        <li class="active">Mysql实例列表</li>
+    </ol>
+</section>
+<section class="content" id="showcontent">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-primary">
+                <div class="box-header">
+                    <h3 class="box-title">Mysql实例列表</h3>
+
+                    <div class="box-tools">
+
+                        <div class="input-group input-group-sm" style="width: 150px;">
+                            <input type="text" name="table_search" class="form-control pull-right"
+                                   placeholder="请输入关键字...">
+                            <div class="input-group-btn">
+                                <button type="submit" class="btn btn-default"><i class="fa fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div><button type="button" class="btn btn-primary" id="btn_add">添加</button>&nbsp;<a href="#" class="btn btn-danger batchDel">批量删除</a></div>
+                </div>
+
+                <div class="box-body table-responsive no-padding">
+                    {% for mes in get_flashed_messages(category_filter=["ok"]) %}
+                    <div class="alert alert-success alert-dismissible">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <h4><i class="icon fa fa-check"></i> 操作成功！</h4>
+                    {{ mes }}
+                    </div>
+                    {% endfor %}
+                    <table class="table table-hover">
+                        <tbody>
+                        <tr>
+                            <th>编号</th>
+                            <th>名称</th>
+                            <th>master实例路径</th>
+                            <th>master信息</th>
+                            <th>slave实例路径</th>
+                            <th>slave信息</th>
+                            <th>版本</th>
+                            <th>状态</th>
+                            <th>创建时间</th>
+                            <th>操作</th>
+                        </tr>
+                        {% for v in page_data.items %}
+                        <tr>
+                            <td>{{ v.id }}</td>
+                            <td>{{ v.name }}</td>
+                            <td>{{ v.master_url }}</td>
+                            <td>{{ v.master_info }}</td>
+                            <td>{{ v.slave_url }}</td>
+                            <td>{{ v.salve_info }}</td>
+                            <td>{{ v.version }}</td>
+                            {% if v.status  == 1 %}
+                            <td>在线</td>
+                            {% else %}
+                            <td>离线</td>
+                            {% endif %}
+                            <td>{{ v.addtime }}</td>
+                            <td>
+                                <a href="{{url_for("admin.mysql_edit",id=v.id)}}" class="label label-success">编辑</a>
+                                &nbsp;
+                                <a href="{{url_for("admin.mysql_del",id=v.id)}}" class="label label-danger">删除</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="box-footer clearfix">
+                    {{ pg.page(page_data,'admin.mysql_list') }}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+{% block js%}
+<script>
+    $(document).ready(function(){
+        $("#g-4").addClass("active");
+        $("#g-4-3").addClass("active");
+        $("#btn_add").bind("click",function(){
+            $(window).attr('location',"{{url_for('admin.mysql_add')}}");
+        })
+    });
+
+</script>
+{% endblock %}

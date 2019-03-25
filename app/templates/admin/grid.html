@@ -52,6 +52,40 @@
             </li>
         </ul>
     </li>
+    <li class="treeview" id="g-4">
+        <a href="#">
+            <i class="fa fa-tags" aria-hidden="true"></i>
+            <span>mysql中心</span>
+            <span class="label label-primary pull-right">5</span>
+        </a>
+        <ul class="treeview-menu">
+            <li id="g-4-1">
+                <a href="{{url_for('admin.slave_list',page=1)}}">
+                    <i class="fa fa-circle-o"></i> 从库主机
+                </a>
+            </li>
+            <li id="g-4-2">
+                <a href="{{url_for('admin.sladir_list',page=1)}}">
+                    <i class="fa fa-circle-o"></i> mysql目录
+                </a>
+            </li>
+            <li id="g-4-3">
+                <a href="{{url_for('admin.mysql_list',page=1)}}">
+                    <i class="fa fa-circle-o"></i> mysql实例
+                </a>
+            </li>
+            <li id="g-4-4">
+                <a href="#">
+                    <i class="fa fa-circle-o"></i> mysql数据库
+                </a>
+            </li>
+            <li id="g-4-5">
+                <a href="#">
+                    <i class="fa fa-circle-o"></i> mysql用户
+                </a>
+            </li>
+        </ul>
+    </li>
     <li class="treeview" id="g-8">
         <a href="#">
             <i class="fa fa-file-text" aria-hidden="true"></i>

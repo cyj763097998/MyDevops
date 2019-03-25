@@ -3,7 +3,7 @@
 #edit richard  2019/3/8
 from datetime import datetime
 from app import db
-'''
+"""
 from flask import  Flask
 from flask_sqlalchemy import SQLAlchemy
 app =  Flask(__name__)
@@ -12,7 +12,7 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "mysql://root:@127.0.0.1:3306/db_mydevop
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
 app.config['SECRET_KEY'] = 'b0ba9e899e254f6eaed382f19af1915e'
 db = SQLAlchemy(app)
-'''
+"""
 
 #标签
 class Tag(db.Model):
@@ -40,9 +40,54 @@ class Host(db.Model):
     ssh_port = db.Column(db.String(50))
     status = db.Column(db.SmallInteger)
     addtime = db.Column(db.DateTime, index=True, default=datetime.now)
+    slaves = db.relationship("Slave", backref="host")
 
     def __repr__(self):
         return "<Host %r>" % self.name
+
+# 从库主机
+class Slave(db.Model):
+    __tablename__ = "slave"
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(100), unique=True, nullable=False)
+    host_id = db.Column(db.Integer, db.ForeignKey("host.id"))
+    status = db.Column(db.SmallInteger)
+    addtime = db.Column(db.DateTime, index=True, default=datetime.now)
+
+    def __repr__(self):
+        return "<Slave %r>" % self.name
+
+# 从库目录
+class Sladir(db.Model):
+    __tablename__ = "sladir"
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(100), unique=True, nullable=False)
+    url = db.Column(db.String(255), unique=True, nullable=False)
+    status = db.Column(db.SmallInteger)
+    addtime = db.Column(db.DateTime, index=True, default=datetime.now)
+
+    def __repr__(self):
+        return "<Sladir %r>" % self.name
+
+# mysql实例
+class Mysql(db.Model):
+    __tablename__ = "mysql"
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(100), unique=True, nullable=False)
+    host_id = db.Column(db.Integer, db.ForeignKey("host.id"))
+    master_port = db.Column(db.String(100), nullable=False)
+    master_dir = db.Column(db.Integer, db.ForeignKey("sladir.id"))
+    master_sock = db.Column(db.String(100), nullable=False)
+    version = db.Column(db.String(50), unique=True, nullable=False)
+    slave_id = db.Column(db.Integer, db.ForeignKey("slave.id"))
+    slave_port = db.Column(db.String(100), nullable=False)
+    slave_dir = db.Column(db.Integer, db.ForeignKey("sladir.id"))
+    slave_sock = db.Column(db.String(100), nullable=False)
+    create = db.Column(db.SmallInteger)
+    addtime = db.Column(db.DateTime, index=True, default=datetime.now)
+
+    def __repr__(self):
+        return "<Mysql %r>" % self.name
 
 #会员
 class User(db.Model):

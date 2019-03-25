@@ -4,8 +4,8 @@
 
 from . import admin
 from flask import render_template, url_for, redirect,flash,session,request,abort,jsonify
-from forms import LoginForm,PwdForm,TagForm,AuthForm,RoleForm,AdminForm,HostForm
-from app.models import Admin,Tag,Auth,Role,Host
+from forms import LoginForm,PwdForm,TagForm,AuthForm,RoleForm,AdminForm,HostForm,SlaveForm,SladirForm,MysqlForm
+from app.models import Admin,Tag,Auth,Role,Host,Slave,Sladir,Mysql
 from functools import wraps
 from app import db
 import datetime
@@ -167,6 +167,10 @@ def auth_add():
         if auth_num == 1:
             flash("权限名称已经存在！", "err")
             return redirect(url_for("admin.auth_add"))
+        auth_url_num = Auth.query.filter_by(url=data["auth_url"]).count()
+        if auth_url_num == 1:
+            flash("权限地址已经存在！", "err")
+            return redirect(url_for("admin.auth_add"))
         auth=Auth(
             name=data["auth_name"],
             url=data["auth_url"]
@@ -203,6 +207,10 @@ def auth_edit(id=None):
         if auth.name != data["auth_name"] and auth_num == 1:
             flash("权限名称已经存在！","err")
             return redirect(url_for("admin.auth_edit",id=id))
+        auth_url_num = Auth.query.filter_by(url=data["auth_url"]).count()
+        if auth_url_num == 1:
+            flash("权限地址已经存在！", "err")
+            return redirect(url_for("admin.auth_add",id=id))
         auth.name = data["auth_name"]
         auth.url = data["auth_url"]
         db.session.add(auth)
@@ -459,3 +467,228 @@ def host_del(id=None):
     db.session.commit()
     flash("删除主机成功！","ok")
     return redirect(url_for("admin.host_list",page=1))
+
+#从库列表
+@admin.route("/slave/list/<int:page>/",methods=["get"])
+@admin_login_req
+@admin_auth
+def slave_list(page=None):
+    if page is None:
+        page=1
+    page_data = Slave.query.order_by(
+        Slave.addtime.desc()
+    ).paginate(page=page, per_page=10)
+    return render_template("admin/slave_list.html",page_data=page_data)
+
+#添加从库
+@admin.route("/slave/add/",methods=["GET","POST"])
+@admin_login_req
+@admin_auth
+def slave_add():
+    form = SlaveForm()
+    if form.validate_on_submit():
+        data = form.data
+        slave_num = Slave.query.filter_by(name=data["slave_name"]).count()
+        if slave_num == 1:
+            flash("从库已经存在！", "err")
+            return redirect(url_for("admin.slave_add"))
+        slave = Slave(
+            name = data["slave_name"],
+            host_id = data["host"],
+            status = data["status"],
+        )
+        db.session.add(slave)
+        db.session.commit()
+        flash("添加从库成功","ok")
+        return redirect(url_for("admin.slave_add"))
+    return render_template("admin/slave_add.html",form=form)
+
+#编辑从库
+@admin.route("/slave/edit/<int:id>/",methods=["GET","POST"])
+@admin_login_req
+@admin_auth
+def slave_edit(id=None):
+    form = SlaveForm()
+    slave = Slave.query.get_or_404(id)
+    if request.method == "GET":
+        form.status.data = slave.status
+        form.host.data = slave.host_id
+    if form.validate_on_submit():
+        data = form.data
+        slave_num=Slave.query.filter_by(name=data["slave_name"]).count()
+        if slave.name != data["slave_name"] and slave_num == 1:
+            flash("从库名已经存在！","err")
+            return redirect(url_for("admin.slave_edit",id=id))
+        slave.name = data["slave_name"],
+        slave.host_id = data["host"],
+        slave.status = data["status"],
+        db.session.add(slave)
+        db.session.commit()
+        flash("修改从库成功！","ok")
+        return redirect(url_for("admin.slave_edit",id=id))
+    return render_template("admin/slave_edit.html",form=form,slave=slave)
+
+#删除从库
+@admin.route("/slave/del/<int:id>/",methods=["get"])
+@admin_login_req
+@admin_auth
+def slave_del(id=None):
+    slave=Slave.query.filter_by(id=id).first_or_404()
+    db.session.delete(slave)
+    db.session.commit()
+    flash("删除从库成功！","ok")
+    return redirect(url_for("admin.slave_list",page=1))
+
+#目录列表
+@admin.route("/sladir/list/<int:page>/",methods=["get"])
+@admin_login_req
+@admin_auth
+def sladir_list(page=None):
+    if page is None:
+        page=1
+    page_data = Sladir.query.order_by(
+        Sladir.addtime.desc()
+    ).paginate(page=page, per_page=10)
+    return render_template("admin/sladir_list.html",page_data=page_data)
+
+#添加目录
+@admin.route("/sladir/add/",methods=["GET","POST"])
+@admin_login_req
+@admin_auth
+def sladir_add():
+    form = SladirForm()
+    if form.validate_on_submit():
+        data = form.data
+        sladir_num = Sladir.query.filter_by(name=data["sladir_name"]).count()
+        if sladir_num == 1:
+            flash("目录名已经存在！", "err")
+            return redirect(url_for("admin.sladir_add"))
+        url_num = Sladir.query.filter_by(url=data["url"]).count()
+        if url_num == 1:
+            flash("路径已经存在！", "err")
+            return redirect(url_for("admin.sladir_add"))
+        sladir = Sladir(
+            name = data["sladir_name"],
+            url = data["url"],
+            status = data["status"],
+        )
+        db.session.add(sladir)
+        db.session.commit()
+        flash("添加目录成功","ok")
+        return redirect(url_for("admin.sladir_add"))
+    return render_template("admin/sladir_add.html",form=form)
+
+#编辑目录
+@admin.route("/sladir/edit/<int:id>/",methods=["GET","POST"])
+@admin_login_req
+@admin_auth
+def sladir_edit(id=None):
+    form = SladirForm()
+    sladir = Sladir.query.get_or_404(id)
+    if request.method == "GET":
+        form.status.data = sladir.status
+    if form.validate_on_submit():
+        data = form.data
+        sladir_num=Sladir.query.filter_by(name=data["sladir_name"]).count()
+        if sladir.name != data["sladir_name"] and sladir_num == 1:
+            flash("目录名已经存在！","err")
+            return redirect(url_for("admin.sladir_edit",id=id))
+        url_num = Sladir.query.filter_by(url=data["url"]).count()
+        if sladir.name != data["sladir_name"] and url_num == 1:
+            flash("路径已经存在！", "err")
+            return redirect(url_for("admin.sladir_edit",id=id))
+        sladir.name = data["sladir_name"],
+        sladir.url = data["url"],
+        sladir.status = data["status"],
+        db.session.add(sladir)
+        db.session.commit()
+        flash("修改目录成功！","ok")
+        return redirect(url_for("admin.sladir_edit",id=id))
+    return render_template("admin/sladir_edit.html",form=form,sladir=sladir)
+
+#删除目录
+@admin.route("/sladir/del/<int:id>/",methods=["get"])
+@admin_login_req
+@admin_auth
+def sladir_del(id=None):
+    sladir=Sladir.query.filter_by(id=id).first_or_404()
+    db.session.delete(sladir)
+    db.session.commit()
+    flash("删除目录成功！","ok")
+    return redirect(url_for("admin.sladir_list",page=1))
+
+
+#实例列表
+@admin.route("/mysql/list/<int:page>/",methods=["get"])
+@admin_login_req
+@admin_auth
+def mysql_list(page=None):
+    if page is None:
+        page=1
+    page_data = Mysql.query.order_by(
+        Mysql.addtime.desc()
+    ).paginate(page=page, per_page=10)
+    return render_template("admin/mysql_list.html",page_data=page_data)
+
+#添加实例
+@admin.route("/mysql/add/",methods=["GET","POST"])
+@admin_login_req
+@admin_auth
+def mysql_add():
+    form = MysqlForm()
+    if form.validate_on_submit():
+        data = form.data
+        mysql_num = Mysql.query.filter_by(name=data["mysql_name"]).count()
+        if mysql_num == 1:
+            flash("实例名已经存在！", "err")
+            return redirect(url_for("admin.mysql_add"))
+
+        mysql = Mysql(
+            name = data["mysql_name"],
+        )
+        db.session.add(mysql)
+        db.session.commit()
+        flash("添加目录成功","ok")
+        return redirect(url_for("admin.mysql_add"))
+    return render_template("admin/mysql_add.html",form=form)
+'''
+#编辑目录
+@admin.route("/mysql/edit/<int:id>/",methods=["GET","POST"])
+@admin_login_req
+@admin_auth
+def mysql_edit(id=None):
+    form = MysqlForm()
+    mysql = Mysql.query.get_or_404(id)
+    if request.method == "GET":
+        form.status.data = sladir.status
+    if form.validate_on_submit():
+        data = form.data
+        sladir_num=Sladir.query.filter_by(name=data["sladir_name"]).count()
+        if sladir.name != data["sladir_name"] and sladir_num == 1:
+            flash("目录名已经存在！","err")
+            return redirect(url_for("admin.sladir_edit",id=id))
+        url_num = Sladir.query.filter_by(url=data["url"]).count()
+        if sladir.name != data["sladir_name"] and url_num == 1:
+            flash("路径已经存在！", "err")
+            return redirect(url_for("admin.sladir_edit",id=id))
+        sladir.name = data["sladir_name"],
+        sladir.url = data["url"],
+        sladir.status = data["status"],
+        db.session.add(sladir)
+        db.session.commit()
+        flash("修改目录成功！","ok")
+        return redirect(url_for("admin.sladir_edit",id=id))
+    return render_template("admin/sladir_edit.html",form=form,sladir=sladir)
+
+#删除目录
+@admin.route("/sladir/del/<int:id>/",methods=["get"])
+@admin_login_req
+@admin_auth
+def sladir_del(id=None):
+    sladir=Sladir.query.filter_by(id=id).first_or_404()
+    db.session.delete(sladir)
+    db.session.commit()
+    flash("删除目录成功！","ok")
+    return redirect(url_for("admin.sladir_list",page=1))
+'''
+

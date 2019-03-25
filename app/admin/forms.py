@@ -5,7 +5,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField,FileField,TextAreaField,SelectField,SelectMultipleField
 from wtforms.validators import DataRequired, ValidationError,EqualTo
-from app.models import Admin,Auth,Role
+from app.models import Admin,Auth,Role,Host,Sladir
 
 class LoginForm(FlaskForm):
     """登录"""
@@ -271,6 +271,7 @@ class AdminForm(FlaskForm):
     def __init__(self, *args, **kwargs):
         super(AdminForm, self).__init__(*args, **kwargs)
         self.role.choices = [(v.id, v.name) for v in Role.query.all()]
+
     submit = SubmitField(
         "添加",
         render_kw={
@@ -429,6 +430,281 @@ class HostForm(FlaskForm):
         description="在线状态",
         coerce=int,
         choices= [(1,"在线"),(2,"离线") ],
+        render_kw={
+            "class": "form-control",
+            "required": False
+        }
+    )
+    submit = SubmitField(
+        "添加",
+        render_kw={
+            "class": "btn btn-primary"
+        }
+    )
+    submit_edit = SubmitField(
+        "编辑",
+        render_kw={
+            "class": "btn btn-primary"
+        }
+    )
+    submit_back = SubmitField(
+        "返回",
+        render_kw={
+            "class": "btn btn-success",
+            "onclick" :"javascript:history.back(-1);return false;"
+        }
+    )
+class SlaveForm(FlaskForm):
+    """从库"""
+    slave_name = StringField(
+        label="从库名称",
+        validators=[
+            DataRequired("请输入从库名称！")
+        ],
+        description="从库名称",
+        render_kw={
+            "class": "form-control",
+            "placeholder": "请输入从库名称！",
+            "required": False
+        }
+    )
+    host = SelectField(
+        label="主机",
+        description="主机",
+        coerce=int,
+        render_kw={
+            "class": "form-control",
+        }
+    )
+
+    # 解决下拉数据不同步
+    def __init__(self, *args, **kwargs):
+        super(SlaveForm, self).__init__(*args, **kwargs)
+        self.host.choices = [(v.id, v.outernet_ip+v.name) for v in Host.query.filter_by(status=1).all()]
+    status = SelectField(
+        label="当前状态",
+        description="当前状态",
+        coerce=int,
+        choices= [(1,"在线"),(2,"离线") ],
+        render_kw={
+            "class": "form-control",
+            "required": False
+        }
+    )
+    submit = SubmitField(
+        "添加",
+        render_kw={
+            "class": "btn btn-primary"
+        }
+    )
+    submit_edit = SubmitField(
+        "编辑",
+        render_kw={
+            "class": "btn btn-primary"
+        }
+    )
+    submit_back = SubmitField(
+        "返回",
+        render_kw={
+            "class": "btn btn-success",
+            "onclick" :"javascript:history.back(-1);return false;"
+        }
+    )
+class SladirForm(FlaskForm):
+    """从库目录"""
+    sladir_name = StringField(
+        label="目录名称",
+        validators=[
+            DataRequired("请输入目录名称！")
+        ],
+        description="目录名称",
+        render_kw={
+            "class": "form-control",
+            "placeholder": "请输入目录名称！",
+            "required": False
+        }
+    )
+    url = StringField(
+        label="路径",
+        validators=[
+            DataRequired("请输入路径！")
+        ],
+        description="路径",
+        render_kw={
+            "class": "form-control",
+            "placeholder": "请输入路径！",
+            "required": False
+        }
+    )
+    status = SelectField(
+        label="当前状态",
+        description="当前状态",
+        coerce=int,
+        choices= [(1,"在线"),(2,"离线") ],
+        render_kw={
+            "class": "form-control",
+            "required": False
+        }
+    )
+    submit = SubmitField(
+        "添加",
+        render_kw={
+            "class": "btn btn-primary"
+        }
+    )
+    submit_edit = SubmitField(
+        "编辑",
+        render_kw={
+            "class": "btn btn-primary"
+        }
+    )
+    submit_back = SubmitField(
+        "返回",
+        render_kw={
+            "class": "btn btn-success",
+            "onclick" :"javascript:history.back(-1);return false;"
+        }
+    )
+class MysqlForm(FlaskForm):
+    """mysql实例"""
+    mysql_name = StringField(
+        label="实例名称",
+        validators=[
+            DataRequired("请输入实例名称！")
+        ],
+        description="实例名称",
+        render_kw={
+            "class": "form-control",
+            "placeholder": "请输入实例名称！",
+            "required": False
+        }
+    )
+    host_id = SelectField(
+        label="主主机",
+        description="主主机",
+        coerce=int,
+        render_kw={
+            "class": "form-control",
+        }
+    )
+    # 解决下拉数据不同步
+    def __init__(self, *args, **kwargs):
+        super(MysqlForm, self).__init__(*args, **kwargs)
+        self.host_id.choices = [(v.id, v.name) for v in Host.query.filter_by(status=1).all()]
+
+    master_port = StringField(
+        label="实例端口",
+        validators=[
+            DataRequired("请输入实例端口！")
+        ],
+        description="实例端口",
+        render_kw={
+            "class": "form-control",
+            "placeholder": "请输入实例端口！",
+            "required": False
+        }
+    )
+    master_dir = StringField(
+        label="主目录",
+        validators=[
+            DataRequired("请输入主目录！")
+        ],
+        description="主目录",
+        #coerce=int,
+        render_kw={
+            "class": "form-control",
+        }
+    )
+    # 解决下拉数据不同步
+    def __init__(self, *args, **kwargs):
+        super(MysqlForm, self).__init__(*args, **kwargs)
+        self.master_dir.choices = [(v.id, v.name) for v in Sladir.query.all()]
+
+    master_sock = StringField(
+        label="主sock",
+        validators=[
+            DataRequired("请输入主sock！")
+        ],
+        description="主sock",
+        render_kw={
+            "class": "form-control",
+            "placeholder": "请输入主sock！",
+            "required": False
+        }
+    )
+    version = StringField(
+        label="实例版本",
+        validators=[
+            DataRequired("请输入实例版本！")
+        ],
+        description="主sock",
+        render_kw={
+            "class": "form-control",
+            "placeholder": "请输入实例版本！",
+            "required": False
+        }
+    )
+    salve_id = StringField(
+        label="从主机",
+        validators=[
+            DataRequired("请输入从主机！")
+        ],
+        description="从主机",
+        #coerce=int,
+        render_kw={
+            "class": "form-control",
+        }
+    )
+    # 解决下拉数据不同步
+    def __init__(self, *args, **kwargs):
+        super(MysqlForm, self).__init__(*args, **kwargs)
+        self.slave_id.choices = [(v.id, v.name) for v in Slave.query.all()]
+
+    slave_port = StringField(
+        label="从端口",
+        validators=[
+            DataRequired("请输入从端口！")
+        ],
+        description="从端口",
+        render_kw={
+            "class": "form-control",
+            "placeholder": "请输入从端口！",
+            "required": False
+        }
+    )
+    slave_dir = StringField(
+        label="从目录",
+        validators=[
+            DataRequired("请输入从目录！")
+        ],
+        description="从目录",
+        #coerce=int,
+        render_kw={
+            "class": "form-control",
+        }
+    )
+    # 解决下拉数据不同步
+    def __init__(self, *args, **kwargs):
+        super(MysqlForm, self).__init__(*args, **kwargs)
+        self.slave_dir.choices = [(v.id, v.name) for v in Sladir.query.all()]
+
+    slave_sock = StringField(
+        label="从sock",
+        validators=[
+            DataRequired("请输入从sock！")
+        ],
+        description="主sock",
+        render_kw={
+            "class": "form-control",
+            "placeholder": "请输入从sock！",
+            "required": False
+        }
+    )
+    create = SelectField(
+        label="创建",
+        description="创建",
+        coerce=int,
+        choices= [(1,"创建"),(2,"不创建") ],
         render_kw={
             "class": "form-control",
             "required": False

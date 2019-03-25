@@ -1,0 +1,144 @@
+{% extends "admin/admin.html" %}
+
+{% block content %}
+<section class="content-header">
+    <h1>自动化运维系统</h1>
+    <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Mysql实例管理</a></li>
+        <li class="active">添加实例</li>
+    </ol>
+</section>
+<section class="content" id="showcontent">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-primary">
+                <div class="box-header with-border">
+                    <h3 class="box-title">添加实例</h3>
+                </div>
+                <form role="form" method="POST">
+                    <div class="box-body">
+                        {% for mes in get_flashed_messages(category_filter=["ok"]) %}
+                        <div class="alert alert-success alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                        <h4><i class="icon fa fa-check"></i> 操作成功！</h4>
+                        {{ mes }}
+                        </div>
+                        {% endfor %}
+                        {% for mes in get_flashed_messages(category_filter=["err"]) %}
+                        <div class="alert alert-danger alert-dismissible">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                            <h4><i class="icon fa fa-ban"></i> 操作失败!</h4>
+                            {{ mes }}
+                        </div>
+                        {% endfor %}
+                        <div class="form-group">
+                            <label for="input_name">{{ form.mysql_name.label }}</label>
+                            {{ form.mysql_name }}
+                            {% for err in form.mysql_name.errors %}
+                            <div class="col-md-12">
+                                <font style="color:red">{{ err }}</font>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <div class="form-group">
+                            <label for="input_role_id">{{ form.host_id.label }}</label>
+                            {{ form.host_id }}
+                            {% for err in form.host_id.errors %}
+                            <div class="col-md-12">
+                                <font style="color:red">{{ err }}</font>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <div class="form-group">
+                            <label for="input_role_id">{{ form.master_port.label }}</label>
+                            {{ form.master_port }}
+                            {% for err in form.master_port.errors %}
+                            <div class="col-md-12">
+                                <font style="color:red">{{ err }}</font>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <div class="form-group">
+                            <label for="input_role_id">{{ form.master_dir.label }}</label>
+                            {{ form.master_dir }}
+                            {% for err in form.master_dir.errors %}
+                            <div class="col-md-12">
+                                <font style="color:red">{{ err }}</font>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <div class="form-group">
+                            <label for="input_role_id">{{ form.master_sock.label }}</label>
+                            {{ form.master_sock }}
+                            {% for err in form.master_sock.errors %}
+                            <div class="col-md-12">
+                                <font style="color:red">{{ err }}</font>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <div class="form-group">
+                            <label for="input_role_id">{{ form.version.label }}</label>
+                            {{ form.version }}
+                            {% for err in form.version.errors %}
+                            <div class="col-md-12">
+                                <font style="color:red">{{ err }}</font>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <div class="form-group">
+                            <label for="input_role_id">{{ form.salve_id.label }}</label>
+                            {{ form.salve_id }}
+                            {% for err in form.salve_id.errors %}
+                            <div class="col-md-12">
+                                <font style="color:red">{{ err }}</font>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <div class="form-group">
+                            <label for="input_role_id">{{ form.slave_port.label }}</label>
+                            {{ form.slave_port }}
+                            {% for err in form.slave_port.errors %}
+                            <div class="col-md-12">
+                                <font style="color:red">{{ err }}</font>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <div class="form-group">
+                            <label for="input_role_id">{{ form.slave_dir.label }}</label>
+                            {{ form.slave_dir }}
+                            {% for err in form.slave_dir.errors %}
+                            <div class="col-md-12">
+                                <font style="color:red">{{ err }}</font>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <div class="form-group">
+                            <label for="input_role_id">{{ form.slave_sock.label }}</label>
+                            {{ form.slave_sock }}
+                            {% for err in form.slave_sock.errors %}
+                            <div class="col-md-12">
+                                <font style="color:red">{{ err }}</font>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <div class="form-group">
+                            <label for="input_role_id">{{ form.create.label }}</label>
+                            {{ form.create }}
+                            {% for err in form.create.errors %}
+                            <div class="col-md-12">
+                                <font style="color:red">{{ err }}</font>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="box-footer">
+                        {{form.csrf_token}}
+                        {{form.submit}}
+                        {{ form.submit_back }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
