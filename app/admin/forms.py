@@ -5,7 +5,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField,FileField,TextAreaField,SelectField,SelectMultipleField
 from wtforms.validators import DataRequired, ValidationError,EqualTo
-from app.models import Admin,Auth,Role,Host,Sladir
+from app.models import Admin,Auth,Role,Host,Sladir,Slave
 
 class LoginForm(FlaskForm):
     """登录"""
@@ -189,16 +189,11 @@ class RoleForm(FlaskForm):
         ],
         description="权限地址",
         coerce=int,
-        #choices=[(v.id,v.name) for v in Auth.query.all()],
         render_kw={
             "class": "form-control",
             "required": False
         }
     )
-    # 解决下拉数据不同步
-    def __init__(self, *args, **kwargs):
-        super(RoleForm, self).__init__(*args, **kwargs)
-        self.auths.choices = [(v.id, v.name) for v in Auth.query.all()]
 
     submit = SubmitField(
         "添加",
@@ -219,6 +214,10 @@ class RoleForm(FlaskForm):
             "onclick" :"javascript:history.back(-1);return false;"
         }
     )
+    # 解决下拉数据不同步
+    def __init__(self, *args, **kwargs):
+        super(RoleForm, self).__init__(*args, **kwargs)
+        self.auths.choices = [(v.id, v.name) for v in Auth.query.all()]
 class AdminForm(FlaskForm):
     '''管理员'''
     name = StringField(
@@ -262,15 +261,10 @@ class AdminForm(FlaskForm):
         label="所属角色",
         description="所属角色",
         coerce=int,
-        #choices= [(v.id,v.name) for v in Role.query.all()],
         render_kw={
             "class": "form-control",
         }
     )
-    # 解决下拉数据不同步
-    def __init__(self, *args, **kwargs):
-        super(AdminForm, self).__init__(*args, **kwargs)
-        self.role.choices = [(v.id, v.name) for v in Role.query.all()]
 
     submit = SubmitField(
         "添加",
@@ -291,6 +285,10 @@ class AdminForm(FlaskForm):
             "onclick" :"javascript:history.back(-1);return false;"
         }
     )
+    # 解决下拉数据不同步
+    def __init__(self, *args, **kwargs):
+        super(AdminForm, self).__init__(*args, **kwargs)
+        self.role.choices = [(v.id, v.name) for v in Role.query.all()]
 class HostForm(FlaskForm):
     """主机"""
     host_name = StringField(
@@ -584,14 +582,9 @@ class MysqlForm(FlaskForm):
         description="主主机",
         coerce=int,
         render_kw={
-            "class": "form-control",
+            "class": "form-control select2",
         }
     )
-    # 解决下拉数据不同步
-    def __init__(self, *args, **kwargs):
-        super(MysqlForm, self).__init__(*args, **kwargs)
-        self.host_id.choices = [(v.id, v.name) for v in Host.query.filter_by(status=1).all()]
-
     master_port = StringField(
         label="实例端口",
         validators=[
@@ -604,21 +597,14 @@ class MysqlForm(FlaskForm):
             "required": False
         }
     )
-    master_dir = StringField(
+    master_dir = SelectField(
         label="主目录",
-        validators=[
-            DataRequired("请输入主目录！")
-        ],
         description="主目录",
-        #coerce=int,
+        coerce=int,
         render_kw={
             "class": "form-control",
         }
     )
-    # 解决下拉数据不同步
-    def __init__(self, *args, **kwargs):
-        super(MysqlForm, self).__init__(*args, **kwargs)
-        self.master_dir.choices = [(v.id, v.name) for v in Sladir.query.all()]
 
     master_sock = StringField(
         label="主sock",
@@ -644,21 +630,14 @@ class MysqlForm(FlaskForm):
             "required": False
         }
     )
-    salve_id = StringField(
+    slave_id = SelectField(
         label="从主机",
-        validators=[
-            DataRequired("请输入从主机！")
-        ],
         description="从主机",
-        #coerce=int,
+        coerce=int,
         render_kw={
-            "class": "form-control",
+            "class": "form-control select2",
         }
     )
-    # 解决下拉数据不同步
-    def __init__(self, *args, **kwargs):
-        super(MysqlForm, self).__init__(*args, **kwargs)
-        self.slave_id.choices = [(v.id, v.name) for v in Slave.query.all()]
 
     slave_port = StringField(
         label="从端口",
@@ -672,21 +651,14 @@ class MysqlForm(FlaskForm):
             "required": False
         }
     )
-    slave_dir = StringField(
+    slave_dir = SelectField(
         label="从目录",
-        validators=[
-            DataRequired("请输入从目录！")
-        ],
         description="从目录",
-        #coerce=int,
+        coerce=int,
         render_kw={
             "class": "form-control",
         }
     )
-    # 解决下拉数据不同步
-    def __init__(self, *args, **kwargs):
-        super(MysqlForm, self).__init__(*args, **kwargs)
-        self.slave_dir.choices = [(v.id, v.name) for v in Sladir.query.all()]
 
     slave_sock = StringField(
         label="从sock",
@@ -729,3 +701,10 @@ class MysqlForm(FlaskForm):
             "onclick" :"javascript:history.back(-1);return false;"
         }
     )
+    # 解决下拉数据不同步
+    def __init__(self, *args, **kwargs):
+        super(MysqlForm, self).__init__(*args, **kwargs)
+        self.host_id.choices = [(v.id, v.outernet_ip + v.name) for v in Host.query.filter_by(status=1).all()]
+        self.master_dir.choices = [(v.id, v.url) for v in Sladir.query.filter_by(status=1).all()]
+        self.slave_id.choices = [(v.id, v.name) for v in Slave.query.filter_by(status=1).all()]
+        self.slave_dir.choices = [(v.id, v.url) for v in Sladir.query.filter_by(status=1).all()]

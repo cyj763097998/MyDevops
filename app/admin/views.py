@@ -642,10 +642,11 @@ def mysql_add():
         if mysql_num == 1:
             flash("实例名已经存在！", "err")
             return redirect(url_for("admin.mysql_add"))
-
+        """
         mysql = Mysql(
             name = data["mysql_name"],
         )
+        """
         db.session.add(mysql)
         db.session.commit()
         flash("添加目录成功","ok")
