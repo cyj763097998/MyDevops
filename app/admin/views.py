@@ -9,6 +9,7 @@ from app.models import Admin,Tag,Auth,Role,Host,Slave,Sladir,Mysql
 from functools import wraps
 from app import db
 import datetime
+import requests
 
 #验证是否已登陆
 def admin_login_req(f):
@@ -639,17 +640,44 @@ def mysql_add():
     if form.validate_on_submit():
         data = form.data
         mysql_num = Mysql.query.filter_by(name=data["mysql_name"]).count()
-        if mysql_num == 1:
-            flash("实例名已经存在！", "err")
-            return redirect(url_for("admin.mysql_add"))
-        """
+        #if mysql_num == 1:
+        #    flash("实例名已经存在！", "err")
+        #    return redirect(url_for("admin.mysql_add"))
+
         mysql = Mysql(
             name = data["mysql_name"],
+            host_id = data["host_id"],
+            master_port = data["master_port"],
+            master_dir = data["master_dir"],
+            master_sock = data["master_sock"],
+            version = data["version"],
+            slave_id = data["slave_id"],
+            slave_port = data["slave_port"],
+            slave_dir = data["slave_dir"],
+            slave_sock = data["slave_sock"],
         )
-        """
         db.session.add(mysql)
         db.session.commit()
-        flash("添加目录成功","ok")
+
+        if data["create"] == 1:
+            info_data = {
+                "name": data["mysql_name"],
+                #"host_id": data["host_id"],
+                "master_port": data["master_port"],
+                "master_dir": data["master_dir"],
+                "master_sock": data["master_sock"],
+                "version": data["version"],
+                "slave_id": data["slave_id"],
+                "slave_port": data["slave_port"],
+                "slave_dir": data["slave_dir"],
+                "slave_sock": data["slave_sock"],
+            }
+            host = Host.query.filter_by(id=data["host_id"]).first()
+            print host.outernet_ip
+            #r = requests.post("http://" + str(host.outernet_ip) + ":9999/api/create_masterhost", data=info_data)
+            r = requests.post("http://127.0.0.1:9999/api/create_masterhost", data=info_data)
+
+        flash("添加实例成功","ok")
         return redirect(url_for("admin.mysql_add"))
     return render_template("admin/mysql_add.html",form=form)
 '''

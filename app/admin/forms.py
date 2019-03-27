@@ -618,15 +618,13 @@ class MysqlForm(FlaskForm):
             "required": False
         }
     )
-    version = StringField(
+    version = SelectField(
         label="实例版本",
-        validators=[
-            DataRequired("请输入实例版本！")
-        ],
         description="主sock",
+        coerce=int,
+        choices=[(1, "mysql5.6"), (2, "mysql5.7")],
         render_kw={
             "class": "form-control",
-            "placeholder": "请输入实例版本！",
             "required": False
         }
     )
