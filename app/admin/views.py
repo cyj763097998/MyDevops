@@ -10,6 +10,7 @@ from functools import wraps
 from app import db
 import datetime
 import requests
+import json
 
 #验证是否已登陆
 def admin_login_req(f):
@@ -656,29 +657,42 @@ def mysql_add():
             slave_dir = data["slave_dir"],
             slave_sock = data["slave_sock"],
         )
-        db.session.add(mysql)
-        db.session.commit()
 
         if data["create"] == 1:
+            master_id = Host.query.filter_by(id=data["host_id"]).first()
+            slave_id = Slave.query.filter_by(id=data["slave_id"]).first()
+            master_dir = Sladir.query.filter_by(id=data["master_dir"]).first()
+            slave_dir = Sladir.query.filter_by(id=data["slave_dir"]).first()
             info_data = {
                 "name": data["mysql_name"],
-                #"host_id": data["host_id"],
+                "master_id": master_id.outernet_ip,
                 "master_port": data["master_port"],
-                "master_dir": data["master_dir"],
+                "master_dir": master_dir.url,
                 "master_sock": data["master_sock"],
                 "version": data["version"],
-                "slave_id": data["slave_id"],
+                "slave_id": slave_id.host.outernet_ip,
                 "slave_port": data["slave_port"],
-                "slave_dir": data["slave_dir"],
+                "slave_dir": slave_dir.url,
                 "slave_sock": data["slave_sock"],
             }
-            host = Host.query.filter_by(id=data["host_id"]).first()
-            print host.outernet_ip
-            #r = requests.post("http://" + str(host.outernet_ip) + ":9999/api/create_masterhost", data=info_data)
-            r = requests.post("http://127.0.0.1:9999/api/create_masterhost", data=info_data)
 
-        flash("添加实例成功","ok")
-        return redirect(url_for("admin.mysql_add"))
+            #r = requests.post("http://" + str(master_id.outernet_ip) + ":9999/api/create_masterhost", data=info_data)
+            response_json = requests.post("http://127.0.0.1:9999/api/create_masterhost", data=info_data).text
+            res = json.loads(response_json)
+            if res["code"] == 200:
+                #flash(res["message"], "ok")
+                db.session.add(mysql)
+                db.session.commit()
+                flash("添加实例成功", "ok")
+                return redirect(url_for("admin.mysql_add"))
+            else:
+                flash(res["message"], "err")
+                return redirect(url_for("admin.mysql_add"))
+        else:
+            db.session.add(mysql)
+            db.session.commit()
+            flash("添加实例成功", "ok")
+            return redirect(url_for("admin.mysql_add"))
     return render_template("admin/mysql_add.html",form=form)
 '''
 #编辑目录

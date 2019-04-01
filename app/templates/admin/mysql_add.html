@@ -147,5 +147,20 @@
   $(function () {
       $(".select2").select2();
   });
+
+$(document).ready(function(){
+    $("#master_dir").bind("change",function(){
+        master_port = $("#master_port").val()
+        master_dir = $("#master_dir  option:selected").text()
+        master_sock = master_dir+"/"+master_port+"/mysql.sock"
+        $("#master_sock").val(master_sock)
+    });
+     $("#slave_dir").bind("change",function(){
+        slave_port = $("#slave_port").val()
+        slave_dir = $("#slave_dir  option:selected").text()
+        slave_sock = slave_dir+"/"+slave_port+"/mysql.sock"
+        $("#slave_sock").val(slave_sock)
+    });
+});
 </script>
 {% endblock %}
