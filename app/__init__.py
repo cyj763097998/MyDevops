@@ -3,8 +3,8 @@
 #edit richard  2019/3/8
 from flask import  Flask,render_template
 from flask_sqlalchemy import SQLAlchemy
-import sys
 import os
+import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
