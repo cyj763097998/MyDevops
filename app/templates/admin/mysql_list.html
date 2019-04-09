@@ -55,21 +55,24 @@
                         <tr>
                             <td>{{ v.id }}</td>
                             <td>{{ v.name }}</td>
-                            <td>{{ v.master_url }}</td>
-                            <td>{{ v.master_info }}</td>
-                            <td>{{ v.slave_url }}</td>
-                            <td>{{ v.salve_info }}</td>
-                            <td>{{ v.version }}</td>
-                            {% if v.status  == 1 %}
-                            <td>在线</td>
+                            <td>{{ v.master.url}}{{v.master_port }}</td>
+                            <td>{{ v.host.outernet_ip }}:{{v.master_port }}</td>
+                            <td>{{ v.slave.url }}{{v.slave_port }}</td>
+                            <td>{{ v.slave_host.hosts.outernet_ip }}:{{v.slave_port }}</td>
+                            {% if v.version  == 1 %}
+                            <td>5.6</td>
                             {% else %}
-                            <td>离线</td>
+                            <td>5.7</td>
                             {% endif %}
+
+                            <td>在线</td>
+
+
                             <td>{{ v.addtime }}</td>
                             <td>
-                                <a href="{{url_for("admin.mysql_edit",id=v.id)}}" class="label label-success">编辑</a>
+                                <a href="#" class="label label-success">编辑</a>
                                 &nbsp;
-                                <a href="{{url_for("admin.mysql_del",id=v.id)}}" class="label label-danger">删除</a>
+                                <a href="#" class="label label-danger">删除</a>
                             </td>
                         </tr>
                         {% endfor %}

@@ -676,16 +676,18 @@ def mysql_add():
                 "slave_sock": data["slave_sock"],
             }
 
-            response_json = requests.post("http://" + str(master_id.outernet_ip) + ":9999/api/create_masterhost", data=info_data)
+            response_json = requests.post("http://" + str(master_id.outernet_ip) + ":9999/api/create_masterhost", data=info_data).text
             #response_json = requests.post("http://127.0.0.1:9999/api/create_masterhost", data=info_data).text
             res = json.loads(response_json)
+            #res = response_json
             print res
             print "+++++++++++++++++++++++++"
             if res["code"] == 200:
-                #flash(res["message"], "ok")
+
                 db.session.add(mysql)
                 db.session.commit()
-                flash("添加实例成功", "ok")
+                #flash("添加实例成功", "ok")
+                flash(res["message"], "ok")
                 return redirect(url_for("admin.mysql_add"))
             else:
                 flash(res["message"], "err")

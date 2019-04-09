@@ -3,7 +3,7 @@
 #edit richard  2019/3/8
 from datetime import datetime
 from app import db
-"""
+'''
 from flask import  Flask
 from flask_sqlalchemy import SQLAlchemy
 app =  Flask(__name__)
@@ -12,7 +12,7 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "mysql://root:@127.0.0.1:3306/db_mydevop
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
 app.config['SECRET_KEY'] = 'b0ba9e899e254f6eaed382f19af1915e'
 db = SQLAlchemy(app)
-"""
+'''
 
 #标签
 class Tag(db.Model):
@@ -41,6 +41,7 @@ class Host(db.Model):
     status = db.Column(db.SmallInteger)
     addtime = db.Column(db.DateTime, index=True, default=datetime.now)
     slaves = db.relationship("Slave", backref="host")
+    mysqls = db.relationship("Mysql", backref="host")
 
     def __repr__(self):
         return "<Host %r>" % self.name
@@ -53,6 +54,8 @@ class Slave(db.Model):
     host_id = db.Column(db.Integer, db.ForeignKey("host.id"))
     status = db.Column(db.SmallInteger)
     addtime = db.Column(db.DateTime, index=True, default=datetime.now)
+    hosts = db.relationship("Host", backref="slave")
+
 
     def __repr__(self):
         return "<Slave %r>" % self.name
@@ -78,14 +81,16 @@ class Mysql(db.Model):
     master_port = db.Column(db.String(100), nullable=False)
     master_dir = db.Column(db.Integer, db.ForeignKey("sladir.id"))
     master_sock = db.Column(db.String(100), nullable=False)
-    version = db.Column(db.String(50), unique=True, nullable=False)
+    version = db.Column(db.SmallInteger, nullable=False,default=1)
     slave_id = db.Column(db.Integer, db.ForeignKey("slave.id"))
     slave_port = db.Column(db.String(100), nullable=False)
     slave_dir = db.Column(db.Integer, db.ForeignKey("sladir.id"))
     slave_sock = db.Column(db.String(100), nullable=False)
     create = db.Column(db.SmallInteger)
     addtime = db.Column(db.DateTime, index=True, default=datetime.now)
-
+    master = db.relationship("Sladir", foreign_keys=master_dir)
+    slave = db.relationship("Sladir", foreign_keys=slave_dir)
+    slave_host = db.relationship("Slave", foreign_keys=slave_id)
     def __repr__(self):
         return "<Mysql %r>" % self.name
 
