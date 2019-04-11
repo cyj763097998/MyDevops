@@ -2,7 +2,7 @@
 {% import "ui/admin_page.html" as pg %}
 {% block content %}
 <section class="content-header">
-    <h1>自动化运维系统</h1>
+    <h1>Mysql实例列表</h1>
     <ol class="breadcrumb">
         <li><a href="#"><i class="fa fa-dashboard"></i> Mysql实例管理</a></li>
         <li class="active">Mysql实例列表</li>
@@ -13,10 +13,7 @@
         <div class="col-md-12">
             <div class="box box-primary">
                 <div class="box-header">
-                    <h3 class="box-title">Mysql实例列表</h3>
-
                     <div class="box-tools">
-
                         <div class="input-group input-group-sm" style="width: 150px;">
                             <input type="text" name="table_search" class="form-control pull-right"
                                    placeholder="请输入关键字...">
@@ -55,9 +52,9 @@
                         <tr>
                             <td>{{ v.id }}</td>
                             <td>{{ v.name }}</td>
-                            <td>{{ v.master.url}}{{v.master_port }}</td>
+                            <td>{{ v.master.url}}/{{v.master_port }}</td>
                             <td>{{ v.host.outernet_ip }}:{{v.master_port }}</td>
-                            <td>{{ v.slave.url }}{{v.slave_port }}</td>
+                            <td>{{ v.slave.url }}/{{v.slave_port }}</td>
                             <td>{{ v.slave_host.hosts.outernet_ip }}:{{v.slave_port }}</td>
                             {% if v.version  == 1 %}
                             <td>5.6</td>
@@ -70,9 +67,9 @@
 
                             <td>{{ v.addtime }}</td>
                             <td>
-                                <a href="#" class="label label-success">编辑</a>
+                                <a href="{{url_for("admin.mysql_edit",id=v.id)}}" class="label label-success">编辑</a>
                                 &nbsp;
-                                <a href="#" class="label label-danger">删除</a>
+                                <a href="{{url_for("admin.mysql_del",id=v.id)}}" class="label label-danger">删除</a>
                             </td>
                         </tr>
                         {% endfor %}

@@ -76,7 +76,7 @@ class Sladir(db.Model):
 class Mysql(db.Model):
     __tablename__ = "mysql"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.String(100), unique=True, nullable=False)
+    name = db.Column(db.String(100),  nullable=False)
     host_id = db.Column(db.Integer, db.ForeignKey("host.id"))
     master_port = db.Column(db.String(100), nullable=False)
     master_dir = db.Column(db.Integer, db.ForeignKey("sladir.id"))
@@ -91,6 +91,10 @@ class Mysql(db.Model):
     master = db.relationship("Sladir", foreign_keys=master_dir)
     slave = db.relationship("Sladir", foreign_keys=slave_dir)
     slave_host = db.relationship("Slave", foreign_keys=slave_id)
+    #实例名和主机id联合唯一索引
+    __table_args__ = (
+        db.UniqueConstraint('name', 'host_id', name='uix_mysql_name_host_id'),
+    )
     def __repr__(self):
         return "<Mysql %r>" % self.name
 

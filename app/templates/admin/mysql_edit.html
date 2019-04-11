@@ -2,10 +2,10 @@
 
 {% block content %}
 <section class="content-header">
-    <h1>添加主机</h1>
+    <h1>编辑实例</h1>
     <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> 主机管理</a></li>
-        <li class="active">添加主机</li>
+        <li><a href="#"><i class="fa fa-dashboard"></i> Mysql实例管理</a></li>
+        <li class="active">编辑实例</li>
     </ol>
 </section>
 <section class="content" id="showcontent">
@@ -31,108 +31,99 @@
                         </div>
                         {% endfor %}
                         <div class="form-group">
-                            <label for="input_name">{{ form.host_name.label }}</label>
-                            {{ form.host_name}}
-                            {% for err in form.host_name.errors %}
+                            <label for="input_name">{{ form.mysql_name.label }}</label>
+                            {{ form.mysql_name(value=mysql.name) }}
+                            {% for err in form.mysql_name.errors %}
                             <div class="col-md-12">
                                 <font style="color:red">{{ err }}</font>
                             </div>
                             {% endfor %}
                         </div>
                         <div class="form-group">
-                            <label for="input_name">{{ form.system.label }}</label>
-                            {{ form.system}}
-                            {% for err in form.system.errors %}
+                            <label for="input_role_id">{{ form.host_id.label }}</label>
+                            {{ form.host_id(value=mysql.host_id) }}
+                            {% for err in form.host_id.errors %}
                             <div class="col-md-12">
                                 <font style="color:red">{{ err }}</font>
                             </div>
                             {% endfor %}
                         </div>
                         <div class="form-group">
-                            <label for="input_name">{{ form.outernet_ip.label }}</label>
-                            {{ form.outernet_ip }}
-                            {% for err in form.outernet_ip.errors %}
+                            <label for="input_role_id">{{ form.master_port.label }}</label>
+                            {{ form.master_port(value=mysql.master_port)}}
+                            {% for err in form.master_port.errors %}
                             <div class="col-md-12">
                                 <font style="color:red">{{ err }}</font>
                             </div>
                             {% endfor %}
                         </div>
                         <div class="form-group">
-                            <label for="input_name">{{ form.intranet_ip.label }}</label>
-                            {{ form.intranet_ip }}
-                            {% for err in form.intranet_ip.errors %}
+                            <label for="input_role_id">{{ form.master_dir.label }}</label>
+                            {{ form.master_dir }}
+                            {% for err in form.master_dir.errors %}
                             <div class="col-md-12">
                                 <font style="color:red">{{ err }}</font>
                             </div>
                             {% endfor %}
                         </div>
                         <div class="form-group">
-                            <label for="input_name">{{ form.cpu.label }}</label>
-                            {{ form.cpu }}
-                            {% for err in form.cpu.errors %}
+                            <label for="input_role_id">{{ form.master_sock.label }}</label>
+                            {{ form.master_sock(value=mysql.master_sock) }}
+                            {% for err in form.master_sock.errors %}
                             <div class="col-md-12">
                                 <font style="color:red">{{ err }}</font>
                             </div>
                             {% endfor %}
                         </div>
                         <div class="form-group">
-                            <label for="input_name">{{ form.memory.label }}</label>
-                            {{ form.memory }}
-                            {% for err in form.memory.errors %}
+                            <label for="input_role_id">{{ form.version.label }}</label>
+                            {{ form.version }}
+                            {% for err in form.version.errors %}
                             <div class="col-md-12">
                                 <font style="color:red">{{ err }}</font>
                             </div>
                             {% endfor %}
                         </div>
                         <div class="form-group">
-                            <label for="input_name">{{ form.disk.label }}</label>
-                            {{ form.disk }}
-                            {% for err in form.disk.errors %}
+                            <label for="input_role_id">{{ form.slave_id.label }}</label>
+                            {{ form.slave_id }}
+                            {% for err in form.slave_id.errors %}
                             <div class="col-md-12">
                                 <font style="color:red">{{ err }}</font>
                             </div>
                             {% endfor %}
                         </div>
                         <div class="form-group">
-                            <label for="input_name">{{ form.username.label }}</label>
-                            {{ form.username }}
-                            {% for err in form.username.errors %}
+                            <label for="input_role_id">{{ form.slave_port.label }}</label>
+                            {{ form.slave_port(value=mysql.slave_port) }}
+                            {% for err in form.slave_port.errors %}
                             <div class="col-md-12">
                                 <font style="color:red">{{ err }}</font>
                             </div>
                             {% endfor %}
                         </div>
                         <div class="form-group">
-                            <label for="input_name">{{ form.password.label }}</label>
-                            {{ form.password }}
-                            {% for err in form.password.errors %}
+                            <label for="input_role_id">{{ form.slave_dir.label }}</label>
+                            {{ form.slave_dir }}
+                            {% for err in form.slave_dir.errors %}
                             <div class="col-md-12">
                                 <font style="color:red">{{ err }}</font>
                             </div>
                             {% endfor %}
                         </div>
                         <div class="form-group">
-                            <label for="input_name">{{ form.port.label }}</label>
-                            {{ form.port }}
-                            {% for err in form.port.errors %}
+                            <label for="input_role_id">{{ form.slave_sock.label }}</label>
+                            {{ form.slave_sock(value=mysql.slave_sock) }}
+                            {% for err in form.slave_sock.errors %}
                             <div class="col-md-12">
                                 <font style="color:red">{{ err }}</font>
                             </div>
                             {% endfor %}
                         </div>
                         <div class="form-group">
-                            <label for="input_name">{{ form.ssh_port.label }}</label>
-                            {{ form.ssh_port }}
-                            {% for err in form.ssh_port.errors %}
-                            <div class="col-md-12">
-                                <font style="color:red">{{ err }}</font>
-                            </div>
-                            {% endfor %}
-                        </div>
-                        <div class="form-group">
-                            <label for="input_role_id">{{ form.status.label }}</label>
-                            {{ form.status }}
-                            {% for err in form.status.errors %}
+                            <label for="input_role_id">{{ form.create.label }}</label>
+                            {{ form.create }}
+                            {% for err in form.create.errors %}
                             <div class="col-md-12">
                                 <font style="color:red">{{ err }}</font>
                             </div>
@@ -141,12 +132,34 @@
                     </div>
                     <div class="box-footer">
                         {{form.csrf_token}}
-                        {{form.submit}}
-                        {{form.submit_back}}
+                        {{form.submit_edit}}
+                        {{ form.submit_back }}
                     </div>
                 </form>
             </div>
         </div>
     </div>
 </section>
+{% endblock %}
+{% block js%}
+<script>
+  $(function () {
+      $(".select2").select2();
+  });
+
+$(document).ready(function(){
+    $("#master_dir").bind("change",function(){
+        master_port = $("#master_port").val()
+        master_dir = $("#master_dir  option:selected").text()
+        master_sock = master_dir+"/"+master_port+"/mysql.sock"
+        $("#master_sock").val(master_sock)
+    });
+     $("#slave_dir").bind("change",function(){
+        slave_port = $("#slave_port").val()
+        slave_dir = $("#slave_dir  option:selected").text()
+        slave_sock = slave_dir+"/"+slave_port+"/mysql.sock"
+        $("#slave_sock").val(slave_sock)
+    });
+});
+</script>
 {% endblock %}

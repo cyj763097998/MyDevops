@@ -17,18 +17,23 @@
         <li class="treeview" id="g-2">
         <a href="#">
             <i class="fa fa-tags" aria-hidden="true"></i>
-            <span>标签管理</span>
+            <span>系统设置</span>
             <span class="label label-primary pull-right">2</span>
         </a>
         <ul class="treeview-menu">
             <li id="g-2-1">
-                <a href="{{url_for('admin.tag_add')}}">
-                    <i class="fa fa-circle-o"></i> 添加标签
+                <a href="{{url_for('admin.auth_list',page=1)}}">
+                    <i class="fa fa-circle-o"></i> 权限管理
                 </a>
             </li>
             <li id="g-2-2">
-                <a href="{{url_for('admin.tag_list',page=1)}}">
-                    <i class="fa fa-circle-o"></i> 标签列表
+                <a href="{{url_for('admin.role_list',page=1)}}">
+                    <i class="fa fa-circle-o"></i> 角色管理
+                </a>
+            </li>
+            <li id="g-2-3">
+                <a href="{{url_for('admin.admin_list',page=1)}}">
+                    <i class="fa fa-circle-o"></i> 用户管理
                 </a>
             </li>
         </ul>
@@ -41,11 +46,6 @@
         </a>
         <ul class="treeview-menu">
             <li id="g-3-1">
-                <a href="{{url_for('admin.host_add')}}">
-                    <i class="fa fa-circle-o"></i> 添加主机
-                </a>
-            </li>
-            <li id="g-3-2">
                 <a href="{{url_for('admin.host_list',page=1)}}">
                     <i class="fa fa-circle-o"></i> 主机列表
                 </a>
@@ -106,63 +106,6 @@
             <li id="g-8-3">
                 <a href="#">
                     <i class="fa fa-circle-o"></i> 会员登录日志列表
-                </a>
-            </li>
-        </ul>
-    </li>
-    <li class="treeview" id="g-9">
-        <a href="#">
-            <i class="fa fa-lock" aria-hidden="true"></i>
-            <span>权限管理</span>
-            <span class="label label-primary pull-right">2</span>
-        </a>
-        <ul class="treeview-menu">
-            <li id="g-9-1">
-                <a href="{{url_for('admin.auth_add')}}">
-                    <i class="fa fa-circle-o"></i> 添加权限
-                </a>
-            </li>
-            <li id="g-9-2">
-                <a href="{{url_for('admin.auth_list',page=1)}}">
-                    <i class="fa fa-circle-o"></i> 权限列表
-                </a>
-            </li>
-        </ul>
-    </li>
-    <li class="treeview" id="g-10">
-        <a href="#">
-            <i class="fa fa-user-secret" aria-hidden="true"></i>
-            <span>角色管理</span>
-            <span class="label label-primary pull-right">2</span>
-        </a>
-        <ul class="treeview-menu">
-            <li id="g-10-1">
-                <a href="{{url_for('admin.role_add')}}">
-                    <i class="fa fa-circle-o"></i> 添加角色
-                </a>
-            </li>
-            <li id="g-10-2">
-                <a href="{{url_for('admin.role_list',page=1)}}">
-                    <i class="fa fa-circle-o"></i> 角色列表
-                </a>
-            </li>
-        </ul>
-    </li>
-    <li class="treeview" id="g-11">
-        <a href="#">
-            <i class="fa fa-user-circle" aria-hidden="true"></i>
-            <span>管理员管理</span>
-            <span class="label label-primary pull-right">2</span>
-        </a>
-        <ul class="treeview-menu">
-            <li id="g-11-1">
-                <a href="{{url_for('admin.admin_add')}}">
-                    <i class="fa fa-circle-o"></i> 添加管理员
-                </a>
-            </li>
-            <li id="g-11-2">
-                <a href="{{url_for('admin.admin_list',page=1)}}">
-                    <i class="fa fa-circle-o"></i> 管理员列表
                 </a>
             </li>
         </ul>
