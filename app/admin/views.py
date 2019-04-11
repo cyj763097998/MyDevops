@@ -109,7 +109,7 @@ def tag_add():
         db.session.add(tag)
         db.session.commit()
         flash("添加标签成功！","ok")
-        return redirect(url_for("admin.tag_add"))
+        #return redirect(url_for("admin.tag_add"))
         return redirect(url_for("admin.tag_list", page=1))
         #return jsonify(code=200, status=0, message='ok', data={})
     return render_template("admin/tag_add.html",form=form)
