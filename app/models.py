@@ -91,12 +91,53 @@ class Mysql(db.Model):
     master = db.relationship("Sladir", foreign_keys=master_dir)
     slave = db.relationship("Sladir", foreign_keys=slave_dir)
     slave_host = db.relationship("Slave", foreign_keys=slave_id)
+    dbs = db.relationship("Db", backref="mysql")
     #实例名和主机id联合唯一索引
     __table_args__ = (
         db.UniqueConstraint('name', 'host_id', name='uix_mysql_name_host_id'),
     )
     def __repr__(self):
         return "<Mysql %r>" % self.name
+
+# 数据库
+class Db(db.Model):
+    __tablename__ = "db"
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    des = db.Column(db.String(100), nullable=False)
+    name = db.Column(db.String(100), nullable=False)
+    mysql_id = db.Column(db.Integer, db.ForeignKey("mysql.id"))
+    status = db.Column(db.SmallInteger)
+    create = db.Column(db.SmallInteger)
+    addtime = db.Column(db.DateTime, index=True, default=datetime.now)
+    grants = db.relationship("Grant", backref="db")
+
+    def __repr__(self):
+        return "<Db %r>" % self.name
+
+# 数据库用户
+class Mysqluser(db.Model):
+    __tablename__ = "mysqluser"
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(100), nullable=False)
+    password = db.Column(db.String(100), nullable=False)
+    status = db.Column(db.SmallInteger)
+    create = db.Column(db.SmallInteger)
+    addtime = db.Column(db.DateTime, index=True, default=datetime.now)
+    grants = db.relationship("Grant", backref="mysqluser")
+    def __repr__(self):
+        return "<Mysqluser %r>" % self.name
+
+# 权限管理
+class Grant(db.Model):
+    __tablename__ = "grant"
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    db_id = db.Column(db.Integer, db.ForeignKey("db.id"))  # 外键
+    account_id = db.Column(db.Integer, db.ForeignKey("mysqluser.id"))  # 外键
+    authip = db.Column(db.String(100))
+    myrole = db.Column(db.String(100))
+    addtime = db.Column(db.DateTime, index=True, default=datetime.now)
+    def __repr__(self):
+        return "<Grant %r>" % self.id
 
 #会员
 class User(db.Model):

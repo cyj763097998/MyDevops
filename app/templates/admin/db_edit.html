@@ -2,10 +2,10 @@
 
 {% block content %}
 <section class="content-header">
-    <h1>编辑目录</h1>
+    <h1>编辑数据库</h1>
     <ol class="breadcrumb">
         <li><a href="#"><i class="fa fa-dashboard"></i> mysql中心</a></li>
-        <li class="active">编辑目录</li>
+        <li class="active">编辑数据库</li>
     </ol>
 </section>
 <section class="content" id="showcontent">
@@ -31,18 +31,27 @@
                         </div>
                         {% endfor %}
                         <div class="form-group">
-                            <label for="input_name">{{ form.sladir_name.label }}</label>
-                            {{ form.sladir_name(value=sladir.name) }}
-                            {% for err in form.sladir_name.errors %}
+                            <label for="input_name">{{ form.db_des.label }}</label>
+                            {{ form.db_des(value=database.des) }}
+                            {% for err in form.db_des.errors %}
                             <div class="col-md-12">
                                 <font style="color:red">{{ err }}</font>
                             </div>
                             {% endfor %}
                         </div>
                         <div class="form-group">
-                            <label for="input_role_id">{{ form.url.label }}</label>
-                            {{ form.url(value=sladir.url) }}
-                            {% for err in form.url.errors %}
+                            <label for="input_role_id">{{ form.db_name.label }}</label>
+                            {{ form.db_name(value=database.name) }}
+                            {% for err in form.db_name.errors %}
+                            <div class="col-md-12">
+                                <font style="color:red">{{ err }}</font>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <div class="form-group">
+                            <label for="input_role_id">{{ form.instance.label }}</label>
+                            {{ form.instance }}
+                            {% for err in form.instance.errors %}
                             <div class="col-md-12">
                                 <font style="color:red">{{ err }}</font>
                             </div>
@@ -52,6 +61,15 @@
                             <label for="input_role_id">{{ form.status.label }}</label>
                             {{ form.status }}
                             {% for err in form.status.errors %}
+                            <div class="col-md-12">
+                                <font style="color:red">{{ err }}</font>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <div class="form-group">
+                            <label for="input_role_id">{{ form.create.label }}</label>
+                            {{ form.create }}
+                            {% for err in form.create.errors %}
                             <div class="col-md-12">
                                 <font style="color:red">{{ err }}</font>
                             </div>

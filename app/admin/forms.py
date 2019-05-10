@@ -3,9 +3,9 @@
 #edit richard  2019/3/8
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField,FileField,TextAreaField,SelectField,SelectMultipleField
+from wtforms import StringField, PasswordField, SubmitField,FileField,TextAreaField,SelectField,SelectMultipleField,RadioField
 from wtforms.validators import DataRequired, ValidationError,EqualTo
-from app.models import Admin,Auth,Role,Host,Sladir,Slave
+from app.models import Admin,Auth,Role,Host,Sladir,Slave,Mysql
 
 class LoginForm(FlaskForm):
     """登录"""
@@ -474,7 +474,6 @@ class SlaveForm(FlaskForm):
             "class": "form-control",
         }
     )
-
     # 解决下拉数据不同步
     def __init__(self, *args, **kwargs):
         super(SlaveForm, self).__init__(*args, **kwargs)
@@ -706,3 +705,155 @@ class MysqlForm(FlaskForm):
         self.master_dir.choices = [(v.id, v.url) for v in Sladir.query.filter_by(status=1).all()]
         self.slave_id.choices = [(v.id, v.name) for v in Slave.query.filter_by(status=1).all()]
         self.slave_dir.choices = [(v.id, v.url) for v in Sladir.query.filter_by(status=1).all()]
+
+class DbForm(FlaskForm):
+    """mysql数据库"""
+    db_des = StringField(
+        label="数据库表述",
+        validators=[
+            DataRequired("请输入数据库表述！")
+        ],
+        description="数据库表述",
+        render_kw={
+            "class": "form-control",
+            "placeholder": "请输入数据库表述！",
+            "required": False
+        }
+    )
+    db_name = StringField(
+        label="数据库名称",
+        validators=[
+            DataRequired("请输入数据库名称！")
+        ],
+        description="数据库名称",
+        render_kw={
+            "class": "form-control",
+            "placeholder": "请输入数据库名称！",
+            "required": False
+        }
+    )
+    instance = SelectField(
+        label="数据库实例",
+        description="数据库实例",
+        coerce=int,
+        render_kw={
+            "class": "form-control",
+            "required": False
+        }
+    )
+    # 解决下拉数据不同步
+    def __init__(self, *args, **kwargs):
+        super(DbForm, self).__init__(*args, **kwargs)
+        self.instance.choices = [(v.id, v.host.outernet_ip+'-->'+v.name) for v in Mysql.query.all()]
+
+    status = SelectField(
+        label="当前状态",
+        description="当前状态",
+        coerce=int,
+        choices=[(1, "启用"), (2, "禁用")],
+        render_kw={
+            "class": "form-control",
+            "required": False
+        }
+    )
+    create = SelectField(
+        label="创建",
+        description="创建",
+        coerce=int,
+        choices= [(1,"创建"),(2,"不创建") ],
+        render_kw={
+            "class": "form-control",
+            "required": False
+        }
+    )
+    submit = SubmitField(
+        "添加",
+        render_kw={
+            "class": "btn btn-primary"
+        }
+    )
+    submit_edit = SubmitField(
+        "编辑",
+        render_kw={
+            "class": "btn btn-primary"
+        }
+    )
+    submit_back = SubmitField(
+        "返回",
+        render_kw={
+            "class": "btn btn-success",
+            "onclick" :"javascript:history.back(-1);return false;"
+        }
+    )
+
+class MysqluserForm(FlaskForm):
+    """mysql数据库用户"""
+    mysqluser_name = StringField(
+        label="数据库用户名称",
+        validators=[
+            DataRequired("请输入数据库用户名称！")
+        ],
+        description="数据库用户名称",
+        render_kw={
+            "class": "form-control",
+            "placeholder": "请输入数据库用户名称！",
+            "required": False
+        }
+    )
+    mysqluser_pass = StringField(
+        label="数据库密码",
+        validators=[
+            DataRequired("请输入数据库密码！")
+        ],
+        description="数据库密码",
+        render_kw={
+            "class": "form-control",
+            "placeholder": "请输入数据库密码！",
+            "required": False
+        }
+    )
+    status = SelectField(
+        label="当前状态",
+        description="当前状态",
+        coerce=int,
+        choices=[(1, "启用"), (2, "禁用")],
+        render_kw={
+            "class": "form-control",
+            "required": False
+        }
+    )
+    create = SelectField(
+        label="创建",
+        description="创建",
+        coerce=int,
+        choices= [(1,"创建"),(2,"不创建") ],
+        render_kw={
+            "class": "form-control",
+            "required": False
+        }
+    )
+    submit = SubmitField(
+        "添加",
+        render_kw={
+            "class": "btn btn-primary"
+        }
+    )
+    submit_edit = SubmitField(
+        "编辑",
+        render_kw={
+            "class": "btn btn-primary"
+        }
+    )
+    submit_back = SubmitField(
+        "返回",
+        render_kw={
+            "class": "btn btn-success",
+            "onclick" :"javascript:history.back(-1);return false;"
+        }
+    )
+class ModalForm(FlaskForm):
+    myrole = RadioField(
+        'myrole',
+        coerce=int,
+        choices=[(1,"普通权限"),(2,"只读"),(3,"管理员")],
+    )

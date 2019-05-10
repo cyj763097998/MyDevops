@@ -3,9 +3,9 @@
 #edit richard  2019/3/8
 
 from . import admin
-from flask import render_template, url_for, redirect,flash,session,request,abort,jsonify
-from forms import LoginForm,PwdForm,TagForm,AuthForm,RoleForm,AdminForm,HostForm,SlaveForm,SladirForm,MysqlForm
-from app.models import Admin,Tag,Auth,Role,Host,Slave,Sladir,Mysql
+from flask import render_template, url_for, redirect,flash,session,request,abort,jsonify,make_response
+from forms import LoginForm,PwdForm,TagForm,AuthForm,RoleForm,AdminForm,HostForm,SlaveForm,SladirForm,MysqlForm,DbForm,MysqluserForm
+from app.models import Admin,Tag,Auth,Role,Host,Slave,Sladir,Mysql,Db,Mysqluser,Grant
 from functools import wraps
 from app import db
 import datetime
@@ -52,6 +52,11 @@ def tpl_extra():
 @admin_login_req
 def index():
     return render_template("admin/index.html")
+
+#测试
+@admin.route("/test/")
+def test():
+    return render_template("admin/layer.html")
 
 #修改密码
 @admin.route("/pwd/",methods=['GET','POST'])
@@ -490,7 +495,7 @@ def slave_list(page=None):
         page=1
     page_data = Slave.query.order_by(
         Slave.addtime.desc()
-    ).paginate(page=page, per_page=10)
+    ).paginate(page=page, per_page=1)
     return render_template("admin/slave_list.html",page_data=page_data)
 
 #添加从库
@@ -666,6 +671,7 @@ def mysql_add():
             slave_port = data["slave_port"],
             slave_dir = data["slave_dir"],
             slave_sock = data["slave_sock"],
+            create = data["create"],
         )
 
         if data["create"] == 1:
@@ -722,6 +728,7 @@ def mysql_edit(id=None):
         form.version.data = mysql.version
         form.slave_id.data = mysql.slave_id
         form.slave_dir.data = mysql.slave_dir
+        form.create.data = mysql.create
     if form.validate_on_submit():
         data = form.data
         mysql_num = Mysql.query.filter_by(name=data["mysql_name"], host_id=data["host_id"]).count()
@@ -738,6 +745,7 @@ def mysql_edit(id=None):
         mysql.slave_port = data["slave_port"],
         mysql.slave_dir = data["slave_dir"],
         mysql.slave_sock = data["slave_sock"],
+        mysql.create = data["create"],
 
         if data["create"] == 1:
             master_id = Host.query.filter_by(id=data["host_id"]).first()
@@ -785,5 +793,185 @@ def mysql_del(id=None):
     db.session.commit()
     flash("删除实例成功！","ok")
     return redirect(url_for("admin.mysql_list",page=1))
+
+#数据库列表
+@admin.route("/db/list/<int:page>/",methods=["get"])
+@admin_login_req
+@admin_auth
+def db_list(page=None):
+    if page is None:
+        page=1
+    page_data = Db.query.order_by(
+        Db.addtime.desc()
+    ).paginate(page=page, per_page=10)
+    return render_template("admin/db_list.html",page_data=page_data)
+
+#添加数据库
+@admin.route("/db/add/",methods=["GET","POST"])
+@admin_login_req
+@admin_auth
+def db_add():
+    form = DbForm()
+    if form.validate_on_submit():
+        data = form.data
+        db_num = Db.query.filter_by(name=data["db_name"],mysql_id=data["instance"]).count()
+        if db_num == 1:
+            flash("数据库已经存在！", "err")
+            return redirect(url_for("admin.db_add"))
+        database = Db(
+            des = data["db_des"],
+            name = data["db_name"],
+            mysql_id = data["instance"],
+            status = data["status"],
+            create = data["create"],
+        )
+        db.session.add(database)
+        db.session.commit()
+        flash("添加数据库成功","ok")
+        return redirect(url_for("admin.db_list", page=1))
+    return render_template("admin/db_add.html",form=form)
+
+#编辑数据库
+@admin.route("/db/edit/<int:id>/",methods=["GET","POST"])
+@admin_login_req
+@admin_auth
+def db_edit(id=None):
+    form = DbForm()
+    database = Db.query.get_or_404(id)
+    if request.method == "GET":
+        form.status.data = database.status
+        form.create.data = database.create
+        form.instance.data = database.mysql_id
+    if form.validate_on_submit():
+        data = form.data
+        db_num=Db.query.filter(Db.id!=database.id,Db.name==data["db_name"],Db.mysql_id==data["instance"]).count()
+        if db_num == 1:
+            flash("数据库名已经存在！","err")
+            return redirect(url_for("admin.db_edit",id=id))
+        database.name = data["db_name"],
+        database.des = data["db_des"],
+        database.mysql_id = data["instance"],
+        database.status = data["status"],
+        database.create = data["create"],
+        db.session.add(database)
+        db.session.commit()
+        flash("修改数据库成功！","ok")
+        return redirect(url_for("admin.db_list", page=1))
+    return render_template("admin/db_edit.html",form=form,database=database)
+
+#删除数据库
+@admin.route("/db/del/<int:id>/",methods=["get"])
+@admin_login_req
+@admin_auth
+def db_del(id=None):
+    data=Db.query.filter_by(id=id).first_or_404()
+    db.session.delete(data)
+    db.session.commit()
+    flash("删除数据库成功！","ok")
+    return redirect(url_for("admin.db_list",page=1))
+
+#授权管理
+@admin.route("/grant/list/<int:page>",methods=["get"])
+@admin_login_req
+@admin_auth
+def grant_list(page=None):
+    if page is None:
+        page=1
+    id = request.args.get("id")
+    page_data = Grant.query.join(
+        Mysqluser
+    ).filter(
+        Grant.db_id == id,
+        Grant.account_id == Mysqluser.id
+    ).paginate(page=page, per_page=1)
+    return render_template("admin/grant_list.html", page_data=page_data, id=id)
+
+#获取模态框的数据
+@admin.route("/modal/list/<int:page>",methods=["get"])
+def modal_list(page=None):
+    if page is None:
+        page=1
+    modal_data = Mysqluser.query.paginate(page=page, per_page=2)
+    #resp=make_response()
+    #resp.status_code = 200
+    #resp.headers["content-type"] = "text/html"
+    #resp.response = modal_data.items
+    return render_template("admin/modal.html",modal_data=modal_data,url="admin.modal_list",page=page)
+
+
+
+#数据库用户列表
+@admin.route("/mysqluser/list/<int:page>/",methods=["get"])
+@admin_login_req
+@admin_auth
+def mysqluser_list(page=None):
+    if page is None:
+        page = 1
+    page_data = Mysqluser.query.order_by(
+        Mysqluser.addtime.desc()
+    ).paginate(page=page, per_page=10)
+    return render_template("admin/mysqluser_list.html", page_data=page_data)
+
+#添加数据库用户
+@admin.route("/mysqluser/add/",methods=["GET","POST"])
+@admin_login_req
+@admin_auth
+def mysqluser_add():
+    form = MysqluserForm()
+    if form.validate_on_submit():
+        data = form.data
+        mysqluser_num = Mysqluser.query.filter_by(name=data["mysqluser_name"]).count()
+        if mysqluser_num == 1:
+            flash("数据库用户已经存在！", "err")
+            return redirect(url_for("admin.mysqluser_add"))
+        mysqluser = Mysqluser(
+            name = data["mysqluser_name"],
+            password = data["mysqluser_pass"],
+            status = data["status"],
+            create = data["create"],
+        )
+        db.session.add(mysqluser)
+        db.session.commit()
+        flash("添加数据库用户成功","ok")
+        return redirect(url_for("admin.mysqluser_list", page=1))
+    return render_template("admin/mysqluser_add.html",form=form)
+
+#编辑数据库用户
+@admin.route("/mysqluser/edit/<int:id>/",methods=["GET","POST"])
+@admin_login_req
+@admin_auth
+def mysqluser_edit(id=None):
+    form = MysqluserForm()
+    mysqluser = Mysqluser.query.get_or_404(id)
+    if request.method == "GET":
+        form.status.data = mysqluser.status
+        form.create.data = mysqluser.create
+    if form.validate_on_submit():
+        data = form.data
+        mysqluser_num=Mysqluser.query.filter_by(name=data["mysqluser_name"]).count()
+        if mysqluser.name != data["mysqluser_name"] and mysqluser_num == 1:
+            flash("数据库用户已经存在！","err")
+            return redirect(url_for("admin.mysqluser_edit",id=id))
+        mysqluser.name = data["mysqluser_name"],
+        mysqluser.password = data["mysqluser_pass"],
+        mysqluser.status = data["status"],
+        mysqluser.create = data["create"],
+        db.session.add(mysqluser)
+        db.session.commit()
+        flash("修改数据库用户成功！","ok")
+        return redirect(url_for("admin.mysqluser_list", page=1))
+    return render_template("admin/mysqluser_edit.html",form=form,mysqluser=mysqluser)
+
+#删除数据库用户
+@admin.route("/mysqluser/del/<int:id>/",methods=["get"])
+@admin_login_req
+@admin_auth
+def mysqluser_del(id=None):
+    mysqluser=Mysqluser.query.filter_by(id=id).first_or_404()
+    db.session.delete(mysqluser)
+    db.session.commit()
+    flash("删除数据库用户成功！","ok")
+    return redirect(url_for("admin.mysqluser_list",page=1))
+
 
 

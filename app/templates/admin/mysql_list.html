@@ -4,7 +4,7 @@
 <section class="content-header">
     <h1>Mysql实例列表</h1>
     <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> Mysql实例管理</a></li>
+        <li><a href="#"><i class="fa fa-dashboard"></i> mysql中心</a></li>
         <li class="active">Mysql实例列表</li>
     </ol>
 </section>
@@ -44,7 +44,7 @@
                             <th>slave实例路径</th>
                             <th>slave信息</th>
                             <th>版本</th>
-                            <th>状态</th>
+                            <!-- <th>状态</th> -->
                             <th>创建时间</th>
                             <th>操作</th>
                         </tr>
@@ -61,10 +61,6 @@
                             {% else %}
                             <td>5.7</td>
                             {% endif %}
-
-                            <td>在线</td>
-
-
                             <td>{{ v.addtime }}</td>
                             <td>
                                 <a href="{{url_for("admin.mysql_edit",id=v.id)}}" class="label label-success">编辑</a>

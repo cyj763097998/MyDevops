@@ -2,10 +2,10 @@
 {% import "ui/admin_page.html" as pg %}
 {% block content %}
 <section class="content-header">
-    <h1>从库列表</h1>
+    <h1>数据库列表</h1>
     <ol class="breadcrumb">
         <li><a href="#"><i class="fa fa-dashboard"></i> mysql中心</a></li>
-        <li class="active">从库列表</li>
+        <li class="active">数据库列表</li>
     </ol>
 </section>
 <section class="content" id="showcontent">
@@ -14,7 +14,6 @@
             <div class="box box-primary">
                 <div class="box-header">
                     <div class="box-tools">
-
                         <div class="input-group input-group-sm" style="width: 150px;">
                             <input type="text" name="table_search" class="form-control pull-right"
                                    placeholder="请输入关键字...">
@@ -40,26 +39,36 @@
                         <tr>
                             <th>编号</th>
                             <th>名称</th>
-                            <th>服务器IP</th>
+                            <th>数据库</th>
+                            <th>数据库sock</th>
+                            <th>所属实例</th>
+                            <th>主库信息</th>
+                            <th>从库信息</th>
                             <th>状态</th>
                             <th>创建时间</th>
-                            <th>操作</th>
+                            <th style="width: 180px;">操作</th>
                         </tr>
                         {% for v in page_data.items %}
                         <tr>
                             <td>{{ v.id }}</td>
-                            <td>{{ v.name }}</td>
-                            <td>{{ v.host.outernet_ip }}</td>
-                            {% if v.status  == 1 %}
-                            <td>在线</td>
+                            <td>{{ v.des }}</td>
+                            <td>{{ v.name}}</td>
+                            <td>{{ v.mysql.master_sock}}</td>
+                            <td>{{ v.mysql.name}}</td>
+                            <td>{{ v.mysql.host.outernet_ip+":"+v.mysql.master_port}}</td>
+                            <td>{{ v.mysql.slave_host.host.outernet_ip+":"+v.mysql.slave_port}}</td>
+                            {% if v.status == 1 %}
+                            <td>启用</td>
                             {% else %}
-                            <td>离线</td>
+                            <td>禁用</td>
                             {% endif %}
                             <td>{{ v.addtime }}</td>
-                            <td>
-                                <a href="{{url_for("admin.slave_edit",id=v.id)}}" class="label label-success">编辑</a>
+                            <td >
+                                <a href="{{url_for("admin.grant_list",id=v.id,page=1)}}" class="label label-info">授权管理</a>
                                 &nbsp;
-                                <a href="{{url_for("admin.slave_del",id=v.id)}}" class="label label-danger">删除</a>
+                                <a href="{{url_for("admin.db_edit",id=v.id)}}" class="label label-success">编辑</a>
+                                &nbsp;
+                                <a href="{{url_for("admin.db_del",id=v.id)}}" class="label label-danger">删除</a>
                             </td>
                         </tr>
                         {% endfor %}
@@ -67,7 +76,7 @@
                     </table>
                 </div>
                 <div class="box-footer clearfix">
-                    {{ pg.page(page_data,'admin.slave_list') }}
+                    {{ pg.page(page_data,'admin.db_list') }}
                 </div>
             </div>
         </div>
@@ -78,9 +87,9 @@
 <script>
     $(document).ready(function(){
         $("#g-4").addClass("active");
-        $("#g-4-1").addClass("active");
+        $("#g-4-4").addClass("active");
         $("#btn_add").bind("click",function(){
-            $(window).attr('location',"{{url_for('admin.slave_add')}}");
+            $(window).attr('location',"{{url_for('admin.db_add')}}");
         })
     });
 
