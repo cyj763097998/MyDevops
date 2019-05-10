@@ -40,7 +40,7 @@
                             </div>
                         </div>
                      </div>
-                    <div><button type="button" class="btn btn-primary" id="btn_add">保存权限</button></div>
+                    <div>{{form.submit}}</div>
                 </div>
 
                 <div class="box-body table-responsive no-padding">
@@ -66,9 +66,14 @@
                             <td>{{ v.id }}</td>
                             <td>{{ v.name }}</td>
                             <td>{{ v.password }}</td>
-                            <td>1111</td>
-                            <td>111</td>
-                            <td>111</td>
+                            <td>{{ form.myrole}}</td>
+                            <td>{{ form.authip}}</td>
+                            {% for err in form.system.errors %}
+                            <div class="col-md-12">
+                                <font style="color:red">{{ err }}</font>
+                            </div>
+                            {% endfor %}
+                            <td>{{v.addtime}}</td>
                         </tr>
                         </tr>
                         {% endfor %}

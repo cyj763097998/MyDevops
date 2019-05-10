@@ -4,7 +4,7 @@
 
 from . import admin
 from flask import render_template, url_for, redirect,flash,session,request,abort,jsonify,make_response
-from forms import LoginForm,PwdForm,TagForm,AuthForm,RoleForm,AdminForm,HostForm,SlaveForm,SladirForm,MysqlForm,DbForm,MysqluserForm
+from forms import LoginForm,PwdForm,TagForm,AuthForm,RoleForm,AdminForm,HostForm,SlaveForm,SladirForm,MysqlForm,DbForm,MysqluserForm,ModalForm
 from app.models import Admin,Tag,Auth,Role,Host,Slave,Sladir,Mysql,Db,Mysqluser,Grant
 from functools import wraps
 from app import db
@@ -898,7 +898,25 @@ def modal_list(page=None):
     #resp.response = modal_data.items
     return render_template("admin/modal.html",modal_data=modal_data,url="admin.modal_list",page=page)
 
+#添加授权
+@admin.route("/modal/add/",methods=["GET","POST"])
+@admin_login_req
+@admin_auth
+def modal_add():
+    form = ModalForm()
+    if form.validate_on_submit():
+        data = form.data
 
+        modal_data = Grant(
+            myrole = data["myrole"],
+            authip = data["authip"],
+
+        )
+        db.session.add(modal_data)
+        db.session.commit()
+        flash("添加数据库权限成功","ok")
+        return redirect(url_for("admin.modal_list", page=1))
+    return render_template("admin/modal.html",form=form)
 
 #数据库用户列表
 @admin.route("/mysqluser/list/<int:page>/",methods=["get"])

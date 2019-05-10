@@ -857,3 +857,21 @@ class ModalForm(FlaskForm):
         coerce=int,
         choices=[(1,"普通权限"),(2,"只读"),(3,"管理员")],
     )
+    authip = StringField(
+        label=" 授权ip",
+        validators=[
+            DataRequired("请输入授权ip！")
+        ],
+        description="授权ip",
+        render_kw={
+            "class": "form-control",
+            "placeholder": "请输入授权ip！",
+            "required": False
+        }
+    )
+    submit = SubmitField(
+        "保存权限",
+        render_kw={
+            "class": "btn btn-primary"
+        }
+    )
