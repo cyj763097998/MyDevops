@@ -854,7 +854,6 @@ class MysqluserForm(FlaskForm):
 class ModalForm(FlaskForm):
     myrole = RadioField(
         'myrole',
-        coerce=int,
         choices=[(1,"普通权限"),(2,"只读"),(3,"管理员")],
     )
     authip = StringField(
@@ -865,13 +864,14 @@ class ModalForm(FlaskForm):
         description="授权ip",
         render_kw={
             "class": "form-control",
-            "placeholder": "请输入授权ip！",
+            "placeholder": "%",
             "required": False
         }
     )
     submit = SubmitField(
         "保存权限",
         render_kw={
-            "class": "btn btn-primary"
+            "class": "btn btn-primary",
+            "id": "btn_add"
         }
     )

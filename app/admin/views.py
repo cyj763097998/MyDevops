@@ -844,6 +844,7 @@ def db_edit(id=None):
         form.instance.data = database.mysql_id
     if form.validate_on_submit():
         data = form.data
+        print data
         db_num=Db.query.filter(Db.id!=database.id,Db.name==data["db_name"],Db.mysql_id==data["instance"]).count()
         if db_num == 1:
             flash("数据库名已经存在！","err")
@@ -887,16 +888,24 @@ def grant_list(page=None):
     return render_template("admin/grant_list.html", page_data=page_data, id=id)
 
 #获取模态框的数据
-@admin.route("/modal/list/<int:page>",methods=["get"])
+@admin.route("/modal/list/<int:page>",methods=["GET","POST"])
 def modal_list(page=None):
+    form = ModalForm()
     if page is None:
         page=1
     modal_data = Mysqluser.query.paginate(page=page, per_page=2)
-    #resp=make_response()
-    #resp.status_code = 200
-    #resp.headers["content-type"] = "text/html"
-    #resp.response = modal_data.items
-    return render_template("admin/modal.html",modal_data=modal_data,url="admin.modal_list",page=page)
+    if request.method == "POST":
+            data = form.data
+            print data
+            modal = Grant(
+                myrole=data["myrole"],
+                authip=data["authip"],
+            )
+            db.session.add(modal)
+            db.session.commit()
+            flash("添加数据库权限成功", "ok")
+            return redirect(url_for("admin.modal_list", page=1))
+    return render_template("admin/modal.html",modal_data=modal_data,url="admin.modal_list",page=page,form=form)
 
 #添加授权
 @admin.route("/modal/add/",methods=["GET","POST"])
@@ -904,19 +913,22 @@ def modal_list(page=None):
 @admin_auth
 def modal_add():
     form = ModalForm()
+    print 111111111111111
+    print form.data
+
     if form.validate_on_submit():
         data = form.data
-
         modal_data = Grant(
             myrole = data["myrole"],
             authip = data["authip"],
-
         )
+        print 22222222
+        print data["myrole"]
         db.session.add(modal_data)
         db.session.commit()
         flash("添加数据库权限成功","ok")
-        return redirect(url_for("admin.modal_list", page=1))
-    return render_template("admin/modal.html",form=form)
+        return redirect(url_for("admin.grant_list", page=1))
+    return render_template("admin/modal.html")
 
 #数据库用户列表
 @admin.route("/mysqluser/list/<int:page>/",methods=["get"])
@@ -938,6 +950,7 @@ def mysqluser_add():
     form = MysqluserForm()
     if form.validate_on_submit():
         data = form.data
+        print data
         mysqluser_num = Mysqluser.query.filter_by(name=data["mysqluser_name"]).count()
         if mysqluser_num == 1:
             flash("数据库用户已经存在！", "err")
